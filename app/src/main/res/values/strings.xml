@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Repros</string>
+
+
+    <string-array name="timeframe_time_selection_array">
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+    </string-array>
+
+    <string-array name="timeframe_time_units_array">
+        <item>Seconds</item>
+        <item>Minutes</item>
+        <item>Hours</item>
+        <item>Days</item>
+    </string-array>
+
 </resources>

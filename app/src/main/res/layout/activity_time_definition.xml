@@ -14,11 +14,33 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Mode"
+        android:text="Define Timeframe"
+        android:layout_marginTop="32dp"
+        android:layout_centerInParent="false"
         android:textSize="36sp"
-        android:layout_centerHorizontal="true"
+        android:id="@+id/tv_define_timeframe"
         android:layout_centerVertical="false"
-        android:layout_marginTop="32dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_define_timeframe">
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner_time_selection"
+            android:layout_weight="1" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner_unit_selection"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,19 +49,12 @@
         android:layout_alignParentBottom="true">
 
         <Button
-            android:text="Non-Intrusive"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_non_intrusive"
-            android:layout_weight="1" />
-
-        <Button
-            android:id="@+id/btn_intrusive"
+            android:id="@+id/btn_start_profiling"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Intrusive"
-            android:layout_marginTop="8dp" />
+            android:text="Start Profiling" />
+
     </LinearLayout>
 
 
