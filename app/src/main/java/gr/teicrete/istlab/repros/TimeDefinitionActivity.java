@@ -38,11 +38,10 @@ public class TimeDefinitionActivity extends AppCompatActivity {
         btnStartProfiling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: enable when NonIntrusiveProfilingActivity is built
 
-//                Intent intent = new Intent(TimeDefinitionActivity.this, NonIntrusiveProfilingActivity.class);
+                Intent intent = new Intent(TimeDefinitionActivity.this, NonIntrusiveProfilingActivity.class);
 //                intent.putExtra(PROFILING_SECONDS, getTimeSelectedToSeconds());
-//                startActivity(intent);
+                startActivity(intent);
             }
         });
     }

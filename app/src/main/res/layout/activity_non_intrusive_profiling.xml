@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_non_intrusive_profiling"
     android:layout_width="match_parent"
@@ -10,31 +11,135 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="gr.teicrete.istlab.repros.NonIntrusiveProfilingActivity">
 
-
     <TextView
-        android:text="Profiling"
+        android:id="@+id/tv_profiling_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_profiling_state"
-        android:textSize="30sp" />
+        android:text="Profiling"
+        android:textSize="36sp" />
+
+    <!-- add a countdown view next to tv_profiling_state -->
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/btn_stop_results"
         android:layout_below="@+id/tv_profiling_state"
-        android:layout_above="@+id/btn_stop_results">
+        android:layout_marginBottom="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_motion"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardElevation="@dimen/cardview_default_elevation"
+                card_view:cardUseCompatPadding="true">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:id="@+id/tv_motion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:text="Motion Detection"
+                        android:textSize="24sp" />
+
+                    <!-- <Button
+                        android:text="Learn More"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btn_stop_results2"
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="8dp"
+                        style="?android:attr/borderlessButtonStyle" /> -->
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_sound_level"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_gravity="center"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardElevation="@dimen/cardview_default_elevation"
+                card_view:cardUseCompatPadding="true">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/tv_sound_level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:text="Sound Level"
+                        android:textSize="24sp" />
+
+                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                        android:id="@+id/gauge_sound_level"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:padding="8dp" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_light_level"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_gravity="center"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardElevation="@dimen/cardview_default_elevation"
+                card_view:cardUseCompatPadding="true">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/tv_light_level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:text="Light Level"
+                        android:textSize="24sp" />
+
+                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                        android:id="@+id/gauge_light_level"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:padding="8dp" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
     </ScrollView>
 
+
     <Button
-        android:text="Early Stop"
+        android:id="@+id/btn_stop_results"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_stop_results"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorDanger" />
+        android:layout_alignParentStart="true"
+        android:text="Early Stop" />
 </RelativeLayout>
