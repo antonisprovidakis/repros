@@ -34,7 +34,7 @@ public class TimeDefinitionActivity extends AppCompatActivity {
         spinnerTimeUnit = (Spinner) findViewById(R.id.spinner_unit_selection);
         populateSpinners();
 
-        btnStartProfiling = (Button) findViewById(R.id.btn_start_profiling);
+        btnStartProfiling = (Button) findViewById(R.id.btn_non_intrusive_start_profiling);
         btnStartProfiling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

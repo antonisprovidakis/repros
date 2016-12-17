@@ -10,8 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.Random;
-
 import gr.teicrete.istlab.repros.speedometer.SpeedometerGauge;
 
 public class NonIntrusiveProfilingActivity extends AppCompatActivity {
@@ -21,19 +19,18 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
     private SpeedometerGauge gaugeSoundLevel;
     private SpeedometerGauge gaugeLightLevel;
 
-    private Button btnStopResults;
-
+    private Button btnStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_non_intrusive_profiling);
 
-        btnStopResults = (Button) findViewById(R.id.btn_stop_results);
+        btnStop = (Button) findViewById(R.id.btn_stop);
 
         setupGauges();
 
-        btnStopResults.setOnClickListener(new View.OnClickListener() {
+        btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                showDialogEarlyStop();

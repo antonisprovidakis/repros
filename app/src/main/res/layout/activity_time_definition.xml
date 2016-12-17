@@ -49,7 +49,7 @@
         android:layout_alignParentBottom="true">
 
         <Button
-            android:id="@+id/btn_start_profiling"
+            android:id="@+id/btn_non_intrusive_start_profiling"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

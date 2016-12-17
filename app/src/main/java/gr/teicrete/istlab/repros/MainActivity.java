@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+//        setSupportActionBar(myToolbar);
 
         btnNonIntrusive = (Button) findViewById(R.id.btn_non_intrusive);
         btnNonIntrusive.setOnClickListener(new View.OnClickListener() {
@@ -29,5 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnIntrusive = (Button) findViewById(R.id.btn_intrusive);
+        btnIntrusive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, IntrusiveProfilingActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

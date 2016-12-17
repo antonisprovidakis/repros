@@ -14,39 +14,21 @@
     tools:context="gr.teicrete.istlab.repros.MainActivity">
 
     <TextView
-        android:id="@+id/tv_select_mode"
+        android:id="@+id/tv_initialization_ready"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="false"
         android:layout_marginTop="32dp"
-        android:text="Select Mode"
-        android:textSize="36sp" />
+        android:text="You are ready to start profiling"
+        android:textSize="36sp"
+        android:textAlignment="center" />
 
-    <LinearLayout
-        android:id="@+id/buttons_container"
+    <Button
+        android:id="@+id/btn_intrusive_start_profiling"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/btn_non_intrusive"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Non-Intrusive" />
-
-        <Button
-            android:id="@+id/btn_intrusive"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:text="Intrusive" />
-
-
-    </LinearLayout>
-
+        android:layout_weight="1"
+        android:text="Start Profiling" />
 
 </RelativeLayout>

@@ -12,7 +12,7 @@
     tools:context="gr.teicrete.istlab.repros.NonIntrusiveProfilingActivity">
 
     <TextView
-        android:id="@+id/tv_profiling_state"
+        android:id="@+id/tv_profiling"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Profiling"
@@ -23,8 +23,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/btn_stop_results"
-        android:layout_below="@+id/tv_profiling_state"
+        android:layout_above="@+id/btn_stop"
+        android:layout_below="@+id/tv_profiling"
         android:layout_marginBottom="8dp">
 
         <LinearLayout
@@ -135,7 +135,7 @@
 
 
     <Button
-        android:id="@+id/btn_stop_results"
+        android:id="@+id/btn_stop"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -11,11 +11,15 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".TimeDefinitionActivity" />
-        <activity android:name=".NonIntrusiveProfilingActivity"></activity>
+        <activity android:name=".NonIntrusiveProfilingActivity" />
+        <activity android:name=".ProfilingCompletedActivity" />
+        <activity android:name=".InitializationActivity" />
+        <activity android:name=".IntrusiveProfilingActivity"></activity>
     </application>
 
 </manifest>
