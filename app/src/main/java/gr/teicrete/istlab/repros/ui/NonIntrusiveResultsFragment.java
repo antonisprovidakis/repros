@@ -2,10 +2,21 @@ package gr.teicrete.istlab.repros.ui;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import gr.teicrete.istlab.repros.R;
 
@@ -24,6 +35,8 @@ public class NonIntrusiveResultsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private LineChart motionChart;
 
 
     public NonIntrusiveResultsFragment() {
@@ -57,6 +70,12 @@ public class NonIntrusiveResultsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -68,7 +87,6 @@ public class NonIntrusiveResultsFragment extends Fragment {
 //            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
 //            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 //            return rootView;
-
 
         // Inflate the layout for this fragment
         return rootView;
