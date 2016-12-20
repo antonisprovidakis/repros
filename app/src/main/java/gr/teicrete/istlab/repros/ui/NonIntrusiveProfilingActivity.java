@@ -1,4 +1,4 @@
-package gr.teicrete.istlab.repros;
+package gr.teicrete.istlab.repros.ui;
 
 
 import android.app.AlertDialog;
@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import gr.teicrete.istlab.repros.R;
 import gr.teicrete.istlab.repros.speedometer.SpeedometerGauge;
 
 public class NonIntrusiveProfilingActivity extends AppCompatActivity {

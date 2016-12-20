@@ -8,18 +8,26 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TimeDefinitionActivity" />
-        <activity android:name=".NonIntrusiveProfilingActivity" />
-        <activity android:name=".ProfilingCompletedActivity" />
-        <activity android:name=".InitializationActivity" />
-        <activity android:name=".IntrusiveProfilingActivity"></activity>
+        <activity android:name=".ui.TimeDefinitionActivity" />
+        <activity android:name=".ui.NonIntrusiveProfilingActivity" />
+        <activity android:name=".ui.ProfilingCompletedActivity" />
+        <activity android:name=".ui.InitializationActivity" />
+        <activity android:name=".ui.IntrusiveProfilingActivity" />
+        <activity
+            android:name=".ui.NonIntrusiveAssessmentActivity"
+            android:label="@string/title_activity_non_intrusive_assessment"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.IntrusiveAssessmentActivity"
+            android:label="@string/title_activity_intrusive_assessment"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

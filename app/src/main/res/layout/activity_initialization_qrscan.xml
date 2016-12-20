@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="gr.teicrete.istlab.repros.InitializationActivity">
+    tools:context="gr.teicrete.istlab.repros.ui.InitializationActivity">
 
     <TextView
         android:text="Some initializations need to be done first.\nPlease scan the special QR code on the wall."

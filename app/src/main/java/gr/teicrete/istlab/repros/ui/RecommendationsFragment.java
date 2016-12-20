@@ -1,19 +1,23 @@
-package gr.teicrete.istlab.repros;
+package gr.teicrete.istlab.repros.ui;
 
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+import gr.teicrete.istlab.repros.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AppliancesFragment#newInstance} factory method to
+ * Use the {@link RecommendationsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AppliancesFragment extends Fragment {
+public class RecommendationsFragment extends ListFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -23,8 +27,12 @@ public class AppliancesFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private String[] recommendationsArray = {"Recommendation 1", "Recommendation 2", "Recommendation 3"};
 
-    public AppliancesFragment() {
+
+    private ListView listView;
+
+    public RecommendationsFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +42,11 @@ public class AppliancesFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AppliancesFragment.
+     * @return A new instance of fragment RecommendationsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AppliancesFragment newInstance(String param1, String param2) {
-        AppliancesFragment fragment = new AppliancesFragment();
+    public static RecommendationsFragment newInstance(String param1, String param2) {
+        RecommendationsFragment fragment = new RecommendationsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -55,11 +63,14 @@ public class AppliancesFragment extends Fragment {
         }
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_appliances, container, false);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ListAdapter listAdapter = new ArrayAdapter<String>(this.getContext(), R.layout.recommendation_row, recommendationsArray);
+        setListAdapter(listAdapter);
+
     }
 
 }

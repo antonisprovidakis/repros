@@ -1,4 +1,4 @@
-package gr.teicrete.istlab.repros;
+package gr.teicrete.istlab.repros.ui;
 
 
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import gr.teicrete.istlab.repros.R;
 
 
 /**
@@ -59,7 +61,16 @@ public class IntrusiveResultsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_intrusive_results, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_intrusive_results, container, false);
+
+        // do any UI initializations
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+//            return rootView;
+
+
+        // Inflate the layout for this fragment
+        return rootView;
     }
 
 }
