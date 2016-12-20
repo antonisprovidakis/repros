@@ -6,6 +6,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import gr.teicrete.istlab.repros.R;
 
@@ -67,6 +71,17 @@ public class AppliancesFragment extends Fragment {
 //            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
 //            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 //            return rootView;
+
+        Switch acSwitch = (Switch) rootView.findViewById(R.id.switch_ac);
+        final DiscreteSeekBar acSeekbar= (DiscreteSeekBar) rootView.findViewById(R.id.seekbar_ac);
+        acSeekbar.setEnabled(false);
+
+        acSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                acSeekbar.setEnabled(isChecked);
+            }
+        });
 
 
         // Inflate the layout for this fragment

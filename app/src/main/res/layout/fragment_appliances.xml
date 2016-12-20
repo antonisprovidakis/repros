@@ -26,8 +26,8 @@
                 android:id="@+id/switch_lights"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_lightbulb_outline_black_24dp"
+                android:drawableLeft="@drawable/ic_bulb"
+                android:drawablePadding="6dp"
                 android:text="Lights" />
 
             <View style="@style/Divider" />
@@ -49,26 +49,27 @@
                     android:id="@+id/seekbar_ac"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:dsb_indicatorColor="@color/colorAccent"
                     app:dsb_max="42"
                     app:dsb_min="2"
-                    app:dsb_progressColor="@color/colorAccent"
                     app:dsb_value="22" />
+
+                <!--
+                    app:dsb_indicatorColor="@color/colorAccent"
+                    app:dsb_progressColor="@color/colorAccent"
+                -->
 
             </LinearLayout>
 
             <View style="@style/Divider" />
 
             <Switch
-                android:id="@+id/switch_window1"
+                android:id="@+id/switch_windows"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_window"
                 android:drawablePadding="6dp"
-                android:text="Window1" />
-
-            <View style="@style/Divider" />
+                android:text="Windows" />
 
 
         </LinearLayout>
