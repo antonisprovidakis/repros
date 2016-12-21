@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         btnIntrusive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, InitializationActivity.class);
-                Intent intent = new Intent(MainActivity.this, IntrusiveAssessmentActivity.class);
+                Intent intent = new Intent(MainActivity.this, InitializationActivity.class);
+//                Intent intent = new Intent(MainActivity.this, IntrusiveAssessmentActivity.class);
                 startActivity(intent);
             }
         });
