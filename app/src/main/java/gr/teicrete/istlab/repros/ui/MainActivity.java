@@ -23,18 +23,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                Intent intent = new Intent(MainActivity.this, TimeDefinitionActivity.class);
-                Intent intent = new Intent(MainActivity.this, NonIntrusiveAssessmentActivity.class);
+                Intent intent = new Intent(MainActivity.this, NonIntrusiveProfilingActivity.class);
                 startActivity(intent);
             }
         });
-
 
         btnIntrusive = (Button) findViewById(R.id.btn_intrusive);
         btnIntrusive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, IntrusiveProfilingActivity.class);
 //                Intent intent = new Intent(MainActivity.this, InitializationActivity.class);
-                Intent intent = new Intent(MainActivity.this, InitializationReadyActivity.class);
+//                Intent intent = new Intent(MainActivity.this, InitializationReadyActivity.class);
 //                Intent intent = new Intent(MainActivity.this, IntrusiveAssessmentActivity.class);
                 startActivity(intent);
             }

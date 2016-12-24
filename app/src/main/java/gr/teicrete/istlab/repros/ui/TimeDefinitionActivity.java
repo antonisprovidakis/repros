@@ -8,13 +8,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import java.util.concurrent.TimeUnit;
+
 import gr.teicrete.istlab.repros.R;
 
 public class TimeDefinitionActivity extends AppCompatActivity {
 
     private static final String TAG = "TimeDefinitionActivity";
-    public final static String PROFILING_SECONDS = "gr.teicrete.istlab.repros.PROFILING_SECONDS";
-
+    public final static String PROFILING_MILLIS = "gr.teicrete.istlab.repros.PROFILING_MILLIS";
 
 
     private Spinner spinnerTimeSelection;
@@ -37,9 +38,10 @@ public class TimeDefinitionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(TimeDefinitionActivity.this, NonIntrusiveProfilingActivity.class);
-//                intent.putExtra(PROFILING_SECONDS, getTimeSelectedToSeconds());
-                startActivity(intent);
+                System.out.println(getTimeSelectedToMillis());
+//                Intent intent = new Intent(TimeDefinitionActivity.this, NonIntrusiveProfilingActivity.class);
+//                intent.putExtra(PROFILING_MILLIS, getTimeSelectedToMillis());
+//                startActivity(intent);
             }
         });
     }
@@ -72,29 +74,29 @@ public class TimeDefinitionActivity extends AppCompatActivity {
         spinnerTimeUnit.setAdapter(adapter2);
     }
 
-    private int getTimeSelectedToSeconds() {
-        int timeInSeconds = 0;
+    private long getTimeSelectedToMillis() {
+        long timeInMillis = 0;
 
         int timeSelectionItem = Integer.valueOf((String) spinnerTimeSelection.getSelectedItem());
 
         switch ((String) spinnerTimeUnit.getSelectedItem()) {
             case "Seconds":
-                timeInSeconds = timeSelectionItem;
+                timeInMillis = TimeUnit.SECONDS.toMillis(timeSelectionItem);
                 break;
             case "Minutes":
-                timeInSeconds = timeSelectionItem * 60;
+                timeInMillis = TimeUnit.MINUTES.toMillis(timeSelectionItem);
                 break;
             case "Hours":
-                timeInSeconds = timeSelectionItem * 60 * 60;
+                timeInMillis = TimeUnit.HOURS.toMillis(timeSelectionItem);
                 break;
             case "Days":
-                timeInSeconds = timeSelectionItem * 60 * 60 * 24;
+                timeInMillis = TimeUnit.DAYS.toMillis(timeSelectionItem);
                 break;
             default:
-                break;
+                timeInMillis = 0;
         }
 
-        return timeInSeconds;
+        return timeInMillis;
     }
 
 

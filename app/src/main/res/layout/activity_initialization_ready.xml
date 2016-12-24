@@ -22,26 +22,30 @@
         android:textAlignment="center"
         android:textSize="36sp" />
 
+    <TextView
+        android:id="@+id/tv_room_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_below="@+id/tv_initialization_ready"
+        android:text="Room Information"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
         android:layout_above="@+id/btn_intrusive_start_profiling"
-        android:layout_below="@+id/tv_initialization_ready">
+        android:layout_below="@+id/tv_room_info">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_room_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Room Information"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+
 
             <ListView
                 android:id="@+id/list_view_room_info"

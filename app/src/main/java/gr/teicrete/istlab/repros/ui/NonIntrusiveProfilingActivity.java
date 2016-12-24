@@ -6,10 +6,17 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.util.TimeUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.util.concurrent.TimeUnit;
+
+import cn.iwgang.countdownview.CountdownView;
 import gr.teicrete.istlab.repros.R;
 import gr.teicrete.istlab.repros.speedometer.SpeedometerGauge;
 
@@ -22,21 +29,32 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
 
     private Button btnStop;
 
+    private CountdownView countdownView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_non_intrusive_profiling);
 
+        long millis = 5000; // millis coming from previous activity
+        countdownView = (CountdownView)findViewById(R.id.countdown_timer);
+        countdownView.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
+            @Override
+            public void onEnd(CountdownView cv) {
+                Toast.makeText(NonIntrusiveProfilingActivity.this, "timer ended", Toast.LENGTH_SHORT).show();
+            }
+        });
+        countdownView.start(millis);
+
         btnStop = (Button) findViewById(R.id.btn_stop);
-
-        setupGauges();
-
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               showDialogEarlyStop();
+                showDialogEarlyStop();
             }
         });
+
+        setupGauges();
 
     }
 
@@ -77,6 +95,8 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
         builder.setPositiveButton("Stop", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Log.i(TAG, "stop clicked");
+                countdownView.stop();
+                countdownView.allShowZero();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
