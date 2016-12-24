@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.global.BluetoothServiceSingleton;
 import gr.teicrete.istlab.repros.speedometer.SpeedometerGauge;
 
 public class IntrusiveProfilingActivity extends AppCompatActivity {
@@ -27,6 +29,9 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
 
     private Button btnStop;
 
+    private BluetoothSPP bt;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +46,44 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
                 showDialogEarlyStop();
             }
         });
-    }
 
+        bt = BluetoothServiceSingleton.getInstance(getApplicationContext());
+        bt.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
+            @Override
+            public void onDataReceived(byte[] data, String message) {
+                handleDataReceivedFromArduino(message);
+            }
+        });
+    }
+    private void handleDataReceivedFromArduino(String message) {
+        String[] dataFromArduino = message.split("~");
+
+        double temp = Double.valueOf(dataFromArduino[0]);
+        double humid = Double.valueOf(dataFromArduino[1]);
+        double co2 = Double.valueOf(dataFromArduino[2]);
+
+        System.out.println(temp + " - " + humid + " - " + co2);
+
+        // update ui
+
+        // push in local variable ???
+
+        // send to firebase ???
+    }
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
         showDialogCancel();
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (bt != null) {
+            bt.stopService();
+        }
+    }
+
 
     private void showDialogCancel() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

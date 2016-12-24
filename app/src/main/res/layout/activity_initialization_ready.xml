@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +10,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="gr.teicrete.istlab.repros.ui.MainActivity">
+    tools:context="gr.teicrete.istlab.repros.ui.InitializationActivity">
 
     <TextView
         android:id="@+id/tv_initialization_ready"
@@ -20,8 +19,66 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
         android:text="You are ready to start profiling"
-        android:textSize="36sp"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textSize="36sp" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_intrusive_start_profiling"
+        android:layout_below="@+id/tv_initialization_ready">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_room_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Room Information"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <ListView
+                android:id="@+id/list_view_room_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tv_installed_sensors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Installed Sensors"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ListView
+                android:id="@+id/list_view_installed_sensors"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tv_installed_appliances"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Installed Appliances"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ListView
+                android:id="@+id/list_view_installed_appliances"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listheader="Hello"
+                android:headerDividersEnabled="false" />
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/btn_intrusive_start_profiling"
@@ -30,5 +87,6 @@
         android:layout_alignParentBottom="true"
         android:layout_weight="1"
         android:text="Start Profiling" />
+
 
 </RelativeLayout>

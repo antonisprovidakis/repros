@@ -29,9 +29,6 @@ public class RecommendationsFragment extends ListFragment {
 
     private String[] recommendationsArray = {"Recommendation 1 ", "Recommendation 2", "Recommendation 3"};
 
-
-    private ListView listView;
-
     public RecommendationsFragment() {
         // Required empty public constructor
     }
@@ -68,7 +65,8 @@ public class RecommendationsFragment extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ListAdapter listAdapter = new ArrayAdapter<String>(this.getContext(), R.layout.list_item_recommendation, recommendationsArray);
+//        ListAdapter listAdapter = new ArrayAdapter<String>(this.getContext(), R.layout.list_item_recommendation, recommendationsArray);
+        ListAdapter listAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_list_item_1, recommendationsArray);
         setListAdapter(listAdapter);
 
     }

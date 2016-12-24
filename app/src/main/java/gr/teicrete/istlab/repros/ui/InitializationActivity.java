@@ -1,7 +1,6 @@
 package gr.teicrete.istlab.repros.ui;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
@@ -20,9 +19,10 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.global.BluetoothServiceSingleton;
 
 public class InitializationActivity extends AppCompatActivity {
 
@@ -30,8 +30,11 @@ public class InitializationActivity extends AppCompatActivity {
 
     private boolean isInitialized = false;
 
-
     private Button btnScanSQCode;
+    private Button btn_intrusive_start_profiling;
+
+    private BluetoothSPP bt;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +45,11 @@ public class InitializationActivity extends AppCompatActivity {
         btnScanSQCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                new IntentIntegrator(InitializationActivity.this).initiateScan(); // qr scan
-
-                connectToAccessPoint("", "");
+                new IntentIntegrator(InitializationActivity.this).initiateScan(); // qr scan
             }
         });
+
+        bt = BluetoothServiceSingleton.getInstance(getApplicationContext());
     }
 
     @Override
@@ -61,11 +64,18 @@ public class InitializationActivity extends AppCompatActivity {
                     JSONObject scannedData = new JSONObject(result.getContents());
                     Log.i(TAG, scannedData.getString("arduino_ip"));
                     initConnections(scannedData);
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(InitializationActivity.this, InitializationReadyActivity.class);
+                            startActivity(intent);
+                        }
+                    }, 6000);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -84,32 +94,44 @@ public class InitializationActivity extends AppCompatActivity {
             accessPointSSID = scannedData.getJSONObject("access_point_info").getString("ssid");
             accessPointPassword = scannedData.getJSONObject("access_point_info").getString("password");
             arduinoBTMacAddress = scannedData.getString("arduino_bt_mac_address");
+
+            // show progress dialog
+            final ProgressDialog progressDialog = ProgressDialog.show(this, "Initializing", "Please wait...", true, true);
+
+            // do initializations (need to be in a thread???)
+            // TODO: 1) connect to access point
+            connectToAccessPoint("", "");
+            // TODO: 2) connect to Arduino through Bluetooth
+            connectoToArduino("");
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-        // show progress dialog
-        final ProgressDialog progressDialog = ProgressDialog.show(this, "Initializing", "Please wait...", true, true);
-
-        // do initializations (need to be in a thread???)
-        // TODO: 1) connect to access point
-        // TODO: 2) connect to Arduino through Bluetooth
-
-        // 3) dismiss progress dialog
-//        progressDialog.dismiss();
-
-        // 4) inflate activity_initialization_ready.xml
     }
-
 
     private void connectoToArduino(String macAddress) {
+        // bt_mac_address: 98:D3:31:40:13:78
 
+        String btMacAddress = "98:D3:31:40:13:78";
+
+//        if (!bt.isBluetoothEnabled()) {
+//            bt.enable();
+//        }
+
+        if (!bt.isServiceAvailable()) {
+            bt.setupService();
+        }
+        bt.startService(BluetoothState.DEVICE_OTHER);
+        bt.connect(btMacAddress);
     }
 
-    private void disconnectFromArduino(String macAddress) {
-
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        if (bt != null) {
+//            bt.stopService();
+//        }
+//    }
 
     private boolean connectToAccessPoint(String ssid, String password) {
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -126,7 +148,7 @@ public class InitializationActivity extends AppCompatActivity {
         wifiConfiguration.preSharedKey = properPassword;
 
         int id = wifiManager.addNetwork(wifiConfiguration);
-        boolean networkEnabledSuccessfully =  wifiManager.enableNetwork(id, true);
+        boolean networkEnabledSuccessfully = wifiManager.enableNetwork(id, true);
 
         return networkEnabledSuccessfully;
     }

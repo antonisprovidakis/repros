@@ -6,8 +6,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <!--<uses-permission android:name="android.permission.INTERNET" />-->
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
 
     <uses-feature
         android:name="android.hardware.microphone"
@@ -15,9 +16,9 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-    <!--<uses-feature-->
-    <!--android:name="android.hardware.autofocus"-->
-    <!--android:required="true" />-->
+    <!-- <uses-feature -->
+    <!-- android:name="android.hardware.autofocus" -->
+    <!-- android:required="true" /> -->
     <uses-feature
         android:name="android.hardware.wifi"
         android:required="true" />
@@ -25,24 +26,19 @@
         android:name="android.hardware.bluetooth"
         android:required="true" />
 
-
-
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".ui.TimeDefinitionActivity" />
         <activity android:name=".ui.NonIntrusiveProfilingActivity" />
         <activity android:name=".ui.ProfilingCompletedActivity" />
@@ -56,6 +52,7 @@
             android:name=".ui.IntrusiveAssessmentActivity"
             android:label="@string/title_activity_intrusive_assessment"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.InitializationReadyActivity"></activity>
     </application>
 
 </manifest>
