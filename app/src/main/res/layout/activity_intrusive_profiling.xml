@@ -19,40 +19,42 @@
         android:text="Profiling"
         android:textSize="36sp" />
 
-    <cn.iwgang.countdownview.CountdownView
-        android:id="@+id/countdown_timer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentRight="false"
-        android:layout_below="@+id/tv_profiling"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        app:isShowDay="false"
-        app:isShowHour="true"
-        app:isShowMillisecond="false"
-        app:isShowMinute="true"
-        app:isShowSecond="true"
-        app:suffixGravity="bottom"
-        app:suffixHour="h"
-        app:suffixHourLeftMargin="5dp"
-        app:suffixHourRightMargin="5dp"
-        app:suffixMinute="m"
-        app:suffixMinuteLeftMargin="5dp"
-        app:suffixMinuteRightMargin="5dp"
-        app:suffixSecond="s"
-        app:suffixSecondLeftMargin="5dp"
-        app:suffixTextColor="#444444"
-        app:suffixTextSize="20sp"
-        app:timeTextColor="#444444"
-        app:timeTextSize="32sp" />
+    <!--<cn.iwgang.countdownview.CountdownView-->
+        <!--android:id="@+id/countdown_timer"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/tv_profiling"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--app:isShowDay="true"-->
+        <!--app:isShowHour="true"-->
+        <!--app:isShowMillisecond="false"-->
+        <!--app:isShowMinute="true"-->
+        <!--app:isShowSecond="true"-->
+        <!--app:suffixGravity="bottom"-->
+        <!--app:suffixDay="d"-->
+        <!--app:suffixDayLeftMargin="5dp"-->
+        <!--app:suffixDayRightMargin="5dp"-->
+        <!--app:suffixHour="h"-->
+        <!--app:suffixHourLeftMargin="5dp"-->
+        <!--app:suffixHourRightMargin="5dp"-->
+        <!--app:suffixMinute="m"-->
+        <!--app:suffixMinuteLeftMargin="5dp"-->
+        <!--app:suffixMinuteRightMargin="5dp"-->
+        <!--app:suffixSecond="s"-->
+        <!--app:suffixSecondLeftMargin="5dp"-->
+        <!--app:suffixTextColor="#444444"-->
+        <!--app:suffixTextSize="20sp"-->
+        <!--app:timeTextColor="#444444"-->
+        <!--app:timeTextSize="32sp" />-->
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/btn_stop"
-        android:layout_below="@+id/countdown_timer"
+        android:layout_below="@+id/tv_profiling"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:scrollbars="none">
 
         <LinearLayout
@@ -81,7 +83,7 @@
                         android:text="Sound Level"
                         android:textSize="24sp" />
 
-                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                    <com.cardiomood.android.controls.gauge.SpeedometerGauge
                         android:id="@+id/gauge_sound_level"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -113,7 +115,7 @@
                         android:text="Light Level"
                         android:textSize="24sp" />
 
-                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                    <com.cardiomood.android.controls.gauge.SpeedometerGauge
                         android:id="@+id/gauge_light_level"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -145,7 +147,7 @@
                         android:text="Indoors Temperature"
                         android:textSize="24sp" />
 
-                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                    <com.cardiomood.android.controls.gauge.SpeedometerGauge
                         android:id="@+id/gauge_temp_in"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -177,7 +179,7 @@
                         android:text="Outdoors Temperature"
                         android:textSize="24sp" />
 
-                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                    <com.cardiomood.android.controls.gauge.SpeedometerGauge
                         android:id="@+id/gauge_temp_out"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -209,7 +211,7 @@
                         android:text="Indoors Humidity"
                         android:textSize="24sp" />
 
-                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                    <com.cardiomood.android.controls.gauge.SpeedometerGauge
                         android:id="@+id/gauge_humid_in"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -241,7 +243,7 @@
                         android:text="Outdoors Humidity"
                         android:textSize="24sp" />
 
-                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                    <com.cardiomood.android.controls.gauge.SpeedometerGauge
                         android:id="@+id/gauge_humid_out"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -273,7 +275,7 @@
                         android:text="Total Room Energy Consumption"
                         android:textSize="24sp" />
 
-                    <gr.teicrete.istlab.repros.speedometer.SpeedometerGauge
+                    <com.cardiomood.android.controls.gauge.SpeedometerGauge
                         android:id="@+id/gauge_total_energy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

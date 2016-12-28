@@ -15,7 +15,6 @@ import gr.teicrete.istlab.repros.R;
 public class TimeDefinitionActivity extends AppCompatActivity {
 
     private static final String TAG = "TimeDefinitionActivity";
-    public final static String PROFILING_MILLIS = "gr.teicrete.istlab.repros.PROFILING_MILLIS";
 
 
     private Spinner spinnerTimeSelection;
@@ -38,10 +37,9 @@ public class TimeDefinitionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                System.out.println(getTimeSelectedToMillis());
-//                Intent intent = new Intent(TimeDefinitionActivity.this, NonIntrusiveProfilingActivity.class);
-//                intent.putExtra(PROFILING_MILLIS, getTimeSelectedToMillis());
-//                startActivity(intent);
+                Intent intent = new Intent(TimeDefinitionActivity.this, NonIntrusiveProfilingActivity.class);
+                intent.putExtra("EXTRA_PROFILING_MILLIS", getTimeSelectedToMillis());
+                startActivity(intent);
             }
         });
     }

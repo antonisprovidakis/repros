@@ -5,4 +5,12 @@ package gr.teicrete.istlab.repros.model.microcontroller;
  */
 
 public abstract class NonElectricAppliance extends Appliance {
+
+    public NonElectricAppliance(String id, String name) {
+        super(id, name);
+    }
+
+    public NonElectricAppliance(String id) {
+        super(id);
+    }
 }

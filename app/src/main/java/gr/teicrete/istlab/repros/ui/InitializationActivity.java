@@ -23,17 +23,17 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import gr.teicrete.istlab.repros.R;
 import gr.teicrete.istlab.repros.global.BluetoothServiceSingleton;
+import gr.teicrete.istlab.repros.model.communication.BluetoothModule;
+import gr.teicrete.istlab.repros.model.communication.WiFiModule;
 
 public class InitializationActivity extends AppCompatActivity {
 
     private static final String TAG = "InitializationActivity";
 
-    private boolean isInitialized = false;
-
     private Button btnScanSQCode;
-    private Button btn_intrusive_start_profiling;
 
-    private BluetoothSPP bt;
+    private WiFiModule wiFiModule;
+    private BluetoothModule bluetoothModule;
 
 
     @Override
@@ -49,7 +49,8 @@ public class InitializationActivity extends AppCompatActivity {
             }
         });
 
-        bt = BluetoothServiceSingleton.getInstance(getApplicationContext());
+        wiFiModule = new WiFiModule(getApplicationContext());
+        bluetoothModule = new BluetoothModule(getApplicationContext());
     }
 
     @Override
@@ -62,14 +63,16 @@ public class InitializationActivity extends AppCompatActivity {
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 try {
                     JSONObject scannedData = new JSONObject(result.getContents());
-                    Log.i(TAG, scannedData.getString("arduino_ip"));
                     initConnections(scannedData);
+
+                    final String roomId = scannedData.getString("roomId");
 
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             Intent intent = new Intent(InitializationActivity.this, InitializationReadyActivity.class);
+                            intent.putExtra("EXTRA_ROOM_ID", roomId);
                             startActivity(intent);
                         }
                     }, 6000);
@@ -84,72 +87,23 @@ public class InitializationActivity extends AppCompatActivity {
 
     private void initConnections(final JSONObject scannedData) {
 
-        String roomProfileId = "";
         String accessPointSSID = "";
         String accessPointPassword = "";
         String arduinoBTMacAddress = "";
 
         try {
-            roomProfileId = scannedData.getString("room_profile_id");
-            accessPointSSID = scannedData.getJSONObject("access_point_info").getString("ssid");
-            accessPointPassword = scannedData.getJSONObject("access_point_info").getString("password");
-            arduinoBTMacAddress = scannedData.getString("arduino_bt_mac_address");
+            accessPointSSID = scannedData.getJSONObject("accessPointInfo").getString("ssid");
+            accessPointPassword = scannedData.getJSONObject("accessPointInfo").getString("password");
+            arduinoBTMacAddress = scannedData.getString("arduinoBTMacAddress");
 
             // show progress dialog
             final ProgressDialog progressDialog = ProgressDialog.show(this, "Initializing", "Please wait...", true, true);
 
-            // do initializations (need to be in a thread???)
-            // TODO: 1) connect to access point
-            connectToAccessPoint("", "");
-            // TODO: 2) connect to Arduino through Bluetooth
-            connectoToArduino("");
+            wiFiModule.connectToAccessPoint(accessPointSSID, accessPointPassword);
+            bluetoothModule.connectToDevice(arduinoBTMacAddress);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private void connectoToArduino(String macAddress) {
-        // bt_mac_address: 98:D3:31:40:13:78
-
-        String btMacAddress = "98:D3:31:40:13:78";
-
-//        if (!bt.isBluetoothEnabled()) {
-//            bt.enable();
-//        }
-
-        if (!bt.isServiceAvailable()) {
-            bt.setupService();
-        }
-        bt.startService(BluetoothState.DEVICE_OTHER);
-        bt.connect(btMacAddress);
-    }
-
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        if (bt != null) {
-//            bt.stopService();
-//        }
-//    }
-
-    private boolean connectToAccessPoint(String ssid, String password) {
-        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-
-//        if (!wifiManager.isWifiEnabled()) {
-//            wifiManager.setWifiEnabled(true);
-//            Toast.makeText(this, "Wifi enabled", Toast.LENGTH_SHORT).show();
-//        }
-
-        WifiConfiguration wifiConfiguration = new WifiConfiguration();
-        String properSSID = String.format("\"%s\"", "OTEc62cc8");
-        wifiConfiguration.SSID = properSSID;
-        String properPassword = String.format("\"%s\"", "1C8c1418");
-        wifiConfiguration.preSharedKey = properPassword;
-
-        int id = wifiManager.addNetwork(wifiConfiguration);
-        boolean networkEnabledSuccessfully = wifiManager.enableNetwork(id, true);
-
-        return networkEnabledSuccessfully;
     }
 }

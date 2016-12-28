@@ -5,4 +5,18 @@ package gr.teicrete.istlab.repros.model.microcontroller;
  */
 
 public class CO2Sensor extends Sensor {
+
+    private double co2;
+
+    public CO2Sensor(String id) {
+        super(id);
+    }
+
+    public void meterCO2(){
+
+    }
+
+    public double getCO2(){
+        return co2;
+    }
 }

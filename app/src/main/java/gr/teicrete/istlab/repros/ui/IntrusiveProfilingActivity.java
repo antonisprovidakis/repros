@@ -2,17 +2,25 @@ package gr.teicrete.istlab.repros.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.cardiomood.android.controls.gauge.SpeedometerGauge;
+
+import org.sensingkit.sensingkitlib.SKSensorDataListener;
+import org.sensingkit.sensingkitlib.SKSensorModuleType;
+import org.sensingkit.sensingkitlib.data.SKAudioLevelData;
+import org.sensingkit.sensingkitlib.data.SKLightData;
+import org.sensingkit.sensingkitlib.data.SKSensorData;
+
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import gr.teicrete.istlab.repros.R;
-import gr.teicrete.istlab.repros.global.BluetoothServiceSingleton;
-import gr.teicrete.istlab.repros.speedometer.SpeedometerGauge;
+import gr.teicrete.istlab.repros.model.profiler.IntrusiveProfiler;
 
 public class IntrusiveProfilingActivity extends AppCompatActivity {
 
@@ -20,7 +28,6 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
 
     private SpeedometerGauge gaugeSoundLevel;
     private SpeedometerGauge gaugeLightLevel;
-
     private SpeedometerGauge gaugeTempIn;
     private SpeedometerGauge gaugeTempOut;
     private SpeedometerGauge gaugeHumidIn;
@@ -29,40 +36,74 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
 
     private Button btnStop;
 
-    private BluetoothSPP bt;
+    private IntrusiveProfiler profiler;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intrusive_profiling);
+
+//        final String roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
+        final String roomId = "room_1"; // TODO: change ad-hoc roomId
+
+
         btnStop = (Button) findViewById(R.id.btn_stop);
-
-        setupGauges();
-
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialogEarlyStop();
+                showDialogStop();
             }
         });
 
-        bt = BluetoothServiceSingleton.getInstance(getApplicationContext());
-        bt.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
+        setupGauges();
+
+        profiler = new IntrusiveProfiler(getApplicationContext(), roomId);
+
+        profiler.getLightSensor().setOnDataSensedListener(new SKSensorDataListener() {
+            @Override
+            public void onDataReceived(SKSensorModuleType skSensorModuleType, SKSensorData skSensorData) {
+                SKLightData lightData = (SKLightData) skSensorData;
+                gaugeLightLevel.setSpeed(lightData.getLight());
+            }
+        });
+
+        profiler.getMicrophone().setOnDataSensedListener(new SKSensorDataListener() {
+            @Override
+            public void onDataReceived(SKSensorModuleType skSensorModuleType, SKSensorData skSensorData) {
+                final SKAudioLevelData audioData = (SKAudioLevelData) skSensorData;
+                final double audioLevel = (20 * Math.log10(audioData.getLevel() / 4));
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (audioLevel >= 0) {
+                            gaugeSoundLevel.setSpeed(audioLevel);
+                        }
+                    }
+                });
+            }
+        });
+
+        profiler.setOnDataReceivedFromArduinoListener(new BluetoothSPP.OnDataReceivedListener() {
             @Override
             public void onDataReceived(byte[] data, String message) {
                 handleDataReceivedFromArduino(message);
             }
         });
+
+        profiler.startProfiling();
+
     }
+
     private void handleDataReceivedFromArduino(String message) {
         String[] dataFromArduino = message.split("~");
 
-        double temp = Double.valueOf(dataFromArduino[0]);
-        double humid = Double.valueOf(dataFromArduino[1]);
+        double temperatureIndoors = Double.valueOf(dataFromArduino[0]);
+        double humidityIndoors = Double.valueOf(dataFromArduino[1]);
         double co2 = Double.valueOf(dataFromArduino[2]);
 
-        System.out.println(temp + " - " + humid + " - " + co2);
+        System.out.println(temperatureIndoors + " - " + humidityIndoors + " - " + co2);
 
         // update ui
 
@@ -70,6 +111,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
 
         // send to firebase ???
     }
+
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
@@ -77,11 +119,18 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        profiler = null;
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
-        if (bt != null) {
-            bt.stopService();
-        }
+
+        profiler.stopProfiling();
+//        profiler = null;
+        resetGauges();
     }
 
 
@@ -107,7 +156,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void showDialogEarlyStop() {
+    private void showDialogStop() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Stop Profiling")
@@ -116,6 +165,10 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         builder.setPositiveButton("Stop", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Log.i(TAG, "stop clicked");
+                profiler.stopProfiling();
+                resetGauges();
+
+                showDisplayResultsButton();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -150,7 +203,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         gaugeLightLevel = (SpeedometerGauge) findViewById(R.id.gauge_light_level);
 
         gaugeLightLevel.setMinorTicks(5);
-        gaugeLightLevel.setMajorTickStep(100);
+        gaugeLightLevel.setMajorTickStep(200);
 
         gaugeLightLevel.setLabelConverter(new SpeedometerGauge.LabelConverter() {
             @Override
@@ -160,8 +213,8 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         });
 
         gaugeLightLevel.setUnitsText("Lux");
-        gaugeLightLevel.setMaxSpeed(500);
-        gaugeLightLevel.addColoredRange(0, 500, Color.YELLOW);
+        gaugeLightLevel.setMaxSpeed(1000);
+        gaugeLightLevel.addColoredRange(0, 1000, Color.YELLOW);
 
 
         gaugeTempIn = (SpeedometerGauge) findViewById(R.id.gauge_temp_in);
@@ -258,5 +311,22 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         gaugeTotalEnergy.addColoredRange(151, 250, Color.YELLOW);
         gaugeTotalEnergy.addColoredRange(251, 300, Color.RED);
 
+    }
+
+    private void resetGauges() {
+        gaugeSoundLevel.setSpeed(0);
+        gaugeLightLevel.setSpeed(0);
+    }
+
+    private void showDisplayResultsButton() {
+        btnStop.setText("Display Results");
+        btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(IntrusiveProfilingActivity.this, IntrusiveAssessmentActivity.class);
+//                        intent.putExtra("EXTRA_ROOM_ID", roomId);
+                startActivity(intent);
+            }
+        });
     }
 }

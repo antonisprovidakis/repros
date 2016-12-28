@@ -5,4 +5,13 @@ package gr.teicrete.istlab.repros.model.microcontroller;
  */
 
 public class Window extends NonElectricAppliance {
+
+    public Window(String id) {
+        super(id);
+    }
+
+    public Window(String id, String name) {
+        super(id, name);
+    }
+
 }

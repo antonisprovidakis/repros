@@ -11,43 +11,52 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.model.db.DBHandler;
+import gr.teicrete.istlab.repros.model.profiler.RoomProfile;
 
 public class InitializationReadyActivity extends AppCompatActivity {
 
     private Button btn_intrusive_start_profiling;
 
-    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
     // TODO: replace ad-hoc roomId with the one coming from previous activity
-    DatabaseReference roomInfoRef = rootRef.child("rooms").child("room_1");
+//    private DatabaseReference roomInfoRef;
+
+//    private DatabaseReference readingRoom2;
+
+    private DBHandler dbHandler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initialization_ready);
 
+//        final String roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
+        final String roomId = "room_1"; // TODO: change ad-hoc roomId
+        dbHandler = new DBHandler(roomId);
+
+
         btn_intrusive_start_profiling = (Button) findViewById(R.id.btn_intrusive_start_profiling);
         btn_intrusive_start_profiling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(InitializationReadyActivity.this, IntrusiveProfilingActivity.class);
+                intent.putExtra("EXTRA_ROOM_ID", roomId);
                 startActivity(intent);
             }
         });
@@ -57,11 +66,11 @@ public class InitializationReadyActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        roomInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        dbHandler.getRoomProfileRef().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap data = (HashMap) dataSnapshot.getValue();
-                setupRoomInfo(data);
+                RoomProfile roomProfile = dataSnapshot.getValue(RoomProfile.class);
+                setupRoomInfo(roomProfile);
             }
 
             @Override
@@ -76,21 +85,29 @@ public class InitializationReadyActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    private void setupRoomInfo(HashMap data) {
-        List<String> installedAppliancesList = (ArrayList<String>) data.get("installed_appliances");
-        List<String> installedSensorsList = (ArrayList<String>) data.get("installed_sensors");
+    private void setupRoomInfo(RoomProfile roomProfile) {
+
+        List<String> installedAppliancesList = new ArrayList<>();
+        for (HashMap<String, String> item : roomProfile.getInstalledAppliances()) {
+            installedAppliancesList.add(item.get("id"));
+        }
+
+        List<String> installedSensorsList = new ArrayList<>();
+        for (HashMap<String, String> item : roomProfile.getInstalledSensors()) {
+            installedSensorsList.add(item.get("id"));
+        }
 
         final List<String[]> genericInfoList = new ArrayList<>();
 
 
-        genericInfoList.add(new String[]{"Country", (String) data.get("country")});
-        genericInfoList.add(new String[]{"City", (String) data.get("city")});
-        genericInfoList.add(new String[]{"Building Name", (String) data.get("building_name")});
-        genericInfoList.add(new String[]{"Room Name", (String) data.get("room_name")});
-        genericInfoList.add(new String[]{"Latitude", String.valueOf((double) data.get("latitude"))});
-        genericInfoList.add(new String[]{"Longitude", String.valueOf((double) data.get("longitude"))});
+        genericInfoList.add(new String[]{"Country", roomProfile.getCountry()});
+        genericInfoList.add(new String[]{"City", roomProfile.getCity()});
+        genericInfoList.add(new String[]{"Building Name", roomProfile.getBuildingName()});
+        genericInfoList.add(new String[]{"Room Name", roomProfile.getRoomName()});
+        genericInfoList.add(new String[]{"Latitude", String.valueOf(roomProfile.getLatitude())});
+        genericInfoList.add(new String[]{"Longitude", String.valueOf(roomProfile.getLongitude())});
 
-        ArrayAdapter<String[]> genericListAdapter = new ArrayAdapter<String[]>(this, android.R.layout.simple_list_item_2, android.R.id.text1, genericInfoList){
+        ArrayAdapter<String[]> genericListAdapter = new ArrayAdapter<String[]>(this, android.R.layout.simple_list_item_2, android.R.id.text1, genericInfoList) {
             @NonNull
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
