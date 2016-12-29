@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                Intent intent = new Intent(MainActivity.this, IntrusiveProfilingActivity.class);
-//                Intent intent = new Intent(MainActivity.this, InitializationActivity.class);
-                Intent intent = new Intent(MainActivity.this, InitializationReadyActivity.class);
+                Intent intent = new Intent(MainActivity.this, InitializationActivity.class);
+//                Intent intent = new Intent(MainActivity.this, InitializationReadyActivity.class);
 //                Intent intent = new Intent(MainActivity.this, IntrusiveAssessmentActivity.class);
                 startActivity(intent);
             }

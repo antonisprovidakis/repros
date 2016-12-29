@@ -55,6 +55,9 @@ dependencies {
     compile 'org.sensingkit:SensingKitLib-release@aar'
     compile 'com.jwetherell:motion-detection@aar'
 
+    compile 'com.loopj.android:android-async-http:1.4.9'
+
+
 //    compile 'com.github.emotionsense:SensorManager:1708cd6'
 
     testCompile 'junit:junit:4.12'

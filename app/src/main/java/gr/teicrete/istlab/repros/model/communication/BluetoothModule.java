@@ -67,7 +67,7 @@ public class BluetoothModule extends CommunicationModule {
 //        }
 //    }
 
-    public void setOnDataReceivedListener(BluetoothSPP.OnDataReceivedListener onDataReceivedListener){
+    public void setDataReceivedListener(BluetoothSPP.OnDataReceivedListener onDataReceivedListener){
         bt.setOnDataReceivedListener(onDataReceivedListener);
     }
 

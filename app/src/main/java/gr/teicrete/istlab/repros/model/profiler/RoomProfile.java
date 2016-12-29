@@ -1,5 +1,6 @@
 package gr.teicrete.istlab.repros.model.profiler;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.Map;
  * Created by Antonis on 26-Dec-16.
  */
 
-public class RoomProfile {
+public class RoomProfile implements Serializable {
 
     private String roomName;
     private String country;

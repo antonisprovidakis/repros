@@ -2,9 +2,9 @@ package gr.teicrete.istlab.repros.ui;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -29,6 +29,7 @@ import gr.teicrete.istlab.repros.model.profiler.RoomProfile;
 
 public class InitializationReadyActivity extends AppCompatActivity {
 
+    private TextView tvInitializationReady;
     private Button btn_intrusive_start_profiling;
 
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -40,6 +41,9 @@ public class InitializationReadyActivity extends AppCompatActivity {
 
     private DBHandler dbHandler;
 
+    private String roomId;
+    private RoomProfile roomProfile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +51,19 @@ public class InitializationReadyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_initialization_ready);
 
 //        final String roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
-        final String roomId = "room_1"; // TODO: change ad-hoc roomId
+        roomId = "room_1"; // TODO: change ad-hoc roomId
         dbHandler = new DBHandler(roomId);
 
+        tvInitializationReady = (TextView) findViewById(R.id.tv_initialization_ready);
 
         btn_intrusive_start_profiling = (Button) findViewById(R.id.btn_intrusive_start_profiling);
+        btn_intrusive_start_profiling.setVisibility(View.INVISIBLE);
         btn_intrusive_start_profiling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(InitializationReadyActivity.this, IntrusiveProfilingActivity.class);
                 intent.putExtra("EXTRA_ROOM_ID", roomId);
+                intent.putExtra("EXTRA_ROOM_PROFILE", roomProfile);
                 startActivity(intent);
             }
         });
@@ -69,8 +76,11 @@ public class InitializationReadyActivity extends AppCompatActivity {
         dbHandler.getRoomProfileRef().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                RoomProfile roomProfile = dataSnapshot.getValue(RoomProfile.class);
+                roomProfile = dataSnapshot.getValue(RoomProfile.class);
                 setupRoomInfo(roomProfile);
+
+                tvInitializationReady.setText("You are ready to start profiling");
+                btn_intrusive_start_profiling.setVisibility(View.VISIBLE);
             }
 
             @Override

@@ -27,6 +27,7 @@ public class ReadingsSnapshot {
         this.temperatureOutdoors = temperatureOutdoors;
         this.humidityIndoors = humidityIndoors;
         this.humidityOutdoors = humidityOutdoors;
+        this.motionDetected = motionDetected;
         this.lightLevel = lightLevel;
         this.co2 = co2;
         this.totalEnergyConsumption = totalEnergyConsumption;

@@ -18,9 +18,11 @@ import org.sensingkit.sensingkitlib.data.SKAudioLevelData;
 import org.sensingkit.sensingkitlib.data.SKLightData;
 import org.sensingkit.sensingkitlib.data.SKSensorData;
 
-import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import gr.teicrete.istlab.repros.R;
 import gr.teicrete.istlab.repros.model.profiler.IntrusiveProfiler;
+import gr.teicrete.istlab.repros.model.profiler.RoomProfile;
+import gr.teicrete.istlab.repros.services.ArduinoData;
+import gr.teicrete.istlab.repros.services.WeatherData;
 
 public class IntrusiveProfilingActivity extends AppCompatActivity {
 
@@ -32,11 +34,15 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
     private SpeedometerGauge gaugeTempOut;
     private SpeedometerGauge gaugeHumidIn;
     private SpeedometerGauge gaugeHumidOut;
+    private SpeedometerGauge gaugeCO;
     private SpeedometerGauge gaugeTotalEnergy;
 
     private Button btnStop;
 
     private IntrusiveProfiler profiler;
+
+    private String roomId;
+    private RoomProfile roomProfile;
 
 
     @Override
@@ -44,9 +50,9 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intrusive_profiling);
 
-//        final String roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
-        final String roomId = "room_1"; // TODO: change ad-hoc roomId
-
+//        roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
+        roomId = "room_1"; // TODO: change ad-hoc roomId
+        roomProfile = (RoomProfile) getIntent().getSerializableExtra("EXTRA_ROOM_PROFILE");
 
         btnStop = (Button) findViewById(R.id.btn_stop);
         btnStop.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +64,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
 
         setupGauges();
 
-        profiler = new IntrusiveProfiler(getApplicationContext(), roomId);
+        profiler = new IntrusiveProfiler(getApplicationContext(), roomId, roomProfile);
 
         profiler.getLightSensor().setOnDataSensedListener(new SKSensorDataListener() {
             @Override
@@ -85,10 +91,28 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
             }
         });
 
-        profiler.setOnDataReceivedFromArduinoListener(new BluetoothSPP.OnDataReceivedListener() {
+        profiler.setWeatherDataReceivedListener(new IntrusiveProfiler.WeatherDataReceivedListener() {
             @Override
-            public void onDataReceived(byte[] data, String message) {
-                handleDataReceivedFromArduino(message);
+            public void onWeatherDataReceived(final WeatherData weatherData) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        gaugeTempOut.setSpeed(weatherData.getTemperature());
+                        gaugeHumidOut.setSpeed(weatherData.getHumidity());
+
+                    }
+
+                    // push in local variable ???
+
+                    // send to firebase ???
+                });
+            }
+        });
+
+        profiler.setArduinoDataReceivedListener(new IntrusiveProfiler.ArduinoDataReceivedListener() {
+            @Override
+            public void onArduinoDataReceived(ArduinoData arduinoData) {
+                updateGaugesRelatedToArduino(arduinoData);
             }
         });
 
@@ -96,20 +120,18 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
 
     }
 
-    private void handleDataReceivedFromArduino(String message) {
-        String[] dataFromArduino = message.split("~");
-
-        double temperatureIndoors = Double.valueOf(dataFromArduino[0]);
-        double humidityIndoors = Double.valueOf(dataFromArduino[1]);
-        double co2 = Double.valueOf(dataFromArduino[2]);
-
-        System.out.println(temperatureIndoors + " - " + humidityIndoors + " - " + co2);
+    private void updateGaugesRelatedToArduino(final ArduinoData arduinoData) {
 
         // update ui
-
-        // push in local variable ???
-
-        // send to firebase ???
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gaugeTempIn.setSpeed(arduinoData.getTemperature());
+                gaugeHumidIn.setSpeed(arduinoData.getHumidity());
+                gaugeCO.setSpeed(arduinoData.getCO());
+                gaugeTotalEnergy.setSpeed(arduinoData.getEnergyConsumption());
+            }
+        });
     }
 
     @Override
@@ -292,6 +314,23 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         gaugeHumidOut.addColoredRange(31, 70, Color.rgb(100, 181, 246));
         gaugeHumidOut.addColoredRange(71, 100, Color.rgb(21, 101, 192));
 
+        gaugeCO = (SpeedometerGauge) findViewById(R.id.gauge_co);
+
+        gaugeCO.setMinorTicks(5);
+        gaugeCO.setMajorTickStep(100);
+
+        gaugeCO.setLabelConverter(new SpeedometerGauge.LabelConverter() {
+            @Override
+            public String getLabelFor(double progress, double maxProgress) {
+                return String.valueOf((int) Math.round(progress));
+            }
+        });
+
+        gaugeCO.setUnitsText("ppm");
+        gaugeCO.setMaxSpeed(500);
+        gaugeCO.addColoredRange(0, 50, Color.rgb(255, 255, 51));
+        gaugeCO.addColoredRange(51, 100, Color.rgb(255, 165, 0));
+        gaugeCO.addColoredRange(101, 500, Color.rgb(255, 0, 0));
 
         gaugeTotalEnergy = (SpeedometerGauge) findViewById(R.id.gauge_total_energy);
 

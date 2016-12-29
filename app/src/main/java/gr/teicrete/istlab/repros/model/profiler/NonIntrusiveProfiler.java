@@ -3,6 +3,7 @@ package gr.teicrete.istlab.repros.model.profiler;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Antonis on 26-Dec-16.
@@ -12,7 +13,7 @@ public class NonIntrusiveProfiler implements Profiler {
 
     private boolean profiling;
 
-    private ArrayList<MobileSensor> sensors = new ArrayList<>();
+    private List<MobileSensor> sensors = new ArrayList<>();
 
     private LightSensor lightSensor;
     private Microphone microphone;

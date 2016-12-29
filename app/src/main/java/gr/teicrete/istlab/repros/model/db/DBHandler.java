@@ -15,7 +15,7 @@ public class DBHandler {
 
     private DatabaseReference rootRef = null;
     private DatabaseReference roomProfileRef = null;
-    private DatabaseReference roomReadingSnapshots = null;
+    private DatabaseReference roomReadingSnapshotsRef = null;
 
     private String roomId;
 
@@ -34,18 +34,18 @@ public class DBHandler {
         newRoomReading.setValue(newRoomReadingMap);
 
         String key = newRoomReading.getKey();
-        roomReadingSnapshots = rootRef.child("readings").child(roomId).child(key).child("snapshots");
+        roomReadingSnapshotsRef = rootRef.child("readings").child(roomId).child(key).child("snapshots");
     }
 
     public DatabaseReference getRoomProfileRef() {
         return roomProfileRef;
     }
 
-    public DatabaseReference getRoomReadingSnapshots() {
-        return roomReadingSnapshots;
+    public DatabaseReference getRoomReadingSnapshotsRef() {
+        return roomReadingSnapshotsRef;
     }
 
     public void pushNewReadingsSnapshot(ReadingsSnapshot readingsSnapshot) {
-        roomReadingSnapshots.push().setValue(readingsSnapshot);
+        roomReadingSnapshotsRef.push().setValue(readingsSnapshot);
     }
 }
