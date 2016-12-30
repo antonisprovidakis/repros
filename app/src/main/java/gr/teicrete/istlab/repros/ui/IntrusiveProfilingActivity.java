@@ -1,6 +1,7 @@
 package gr.teicrete.istlab.repros.ui;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -69,8 +70,14 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         profiler.getLightSensor().setOnDataSensedListener(new SKSensorDataListener() {
             @Override
             public void onDataReceived(SKSensorModuleType skSensorModuleType, SKSensorData skSensorData) {
-                SKLightData lightData = (SKLightData) skSensorData;
-                gaugeLightLevel.setSpeed(lightData.getLight());
+                final SKLightData lightData = (SKLightData) skSensorData;
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        gaugeLightLevel.setSpeed(lightData.getLight());
+                    }
+                });
             }
         });
 
@@ -190,7 +197,19 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
                 profiler.stopProfiling();
                 resetGauges();
 
-                showDisplayResultsButton();
+                btnStop.setVisibility(View.INVISIBLE);
+
+                final ProgressDialog progressDialog = ProgressDialog.show(IntrusiveProfilingActivity.this, "Analyzing Data", "Please wait...", true, false);
+
+                profiler.setDataAnalysisEndedListener(new IntrusiveProfiler.DataAnalysisEndedListener() {
+                    @Override
+                    public void onDataAnalysisEnd() {
+                        progressDialog.dismiss();
+                        showDisplayResultsButton();
+                    }
+                });
+
+                profiler.analyzeData();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -335,7 +354,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         gaugeTotalEnergy = (SpeedometerGauge) findViewById(R.id.gauge_total_energy);
 
         gaugeTotalEnergy.setMinorTicks(5);
-        gaugeTotalEnergy.setMajorTickStep(50);
+        gaugeTotalEnergy.setMajorTickStep(2000);
 
         gaugeTotalEnergy.setLabelConverter(new SpeedometerGauge.LabelConverter() {
             @Override
@@ -344,17 +363,22 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
             }
         });
 
-        gaugeTotalEnergy.setUnitsText("kWh");
-        gaugeTotalEnergy.setMaxSpeed(300);
-        gaugeTotalEnergy.addColoredRange(0, 150, Color.GREEN);
-        gaugeTotalEnergy.addColoredRange(151, 250, Color.YELLOW);
-        gaugeTotalEnergy.addColoredRange(251, 300, Color.RED);
-
+        gaugeTotalEnergy.setUnitsText("watt");
+        gaugeTotalEnergy.setMaxSpeed(10000);
+        gaugeTotalEnergy.addColoredRange(0, 3500, Color.GREEN);
+        gaugeTotalEnergy.addColoredRange(3501, 7000, Color.YELLOW);
+        gaugeTotalEnergy.addColoredRange(7001, 10000, Color.RED);
     }
 
     private void resetGauges() {
         gaugeSoundLevel.setSpeed(0);
         gaugeLightLevel.setSpeed(0);
+        gaugeTempIn.setSpeed(0);
+        gaugeTempOut.setSpeed(0);
+        gaugeHumidIn.setSpeed(0);
+        gaugeTempOut.setSpeed(0);
+        gaugeCO.setSpeed(0);
+        gaugeTotalEnergy.setSpeed(0);
     }
 
     private void showDisplayResultsButton() {
@@ -363,9 +387,10 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(IntrusiveProfilingActivity.this, IntrusiveAssessmentActivity.class);
-//                        intent.putExtra("EXTRA_ROOM_ID", roomId);
+//                intent.putExtra("EXTRA_ROOM_ID", roomId);
                 startActivity(intent);
             }
         });
+        btnStop.setVisibility(View.VISIBLE);
     }
 }

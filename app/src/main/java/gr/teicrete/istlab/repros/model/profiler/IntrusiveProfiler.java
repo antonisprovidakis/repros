@@ -2,6 +2,10 @@ package gr.teicrete.istlab.repros.model.profiler;
 
 import android.content.Context;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
@@ -27,8 +31,8 @@ import gr.teicrete.istlab.repros.services.WeatherService;
 public class IntrusiveProfiler implements Profiler {
     public final static int WEATHER_POLLING_DELAY = 60 * 1000;
     public final static int ARDUINO_POLLING_DELAY = 2 * 1000;
+    public final static int DB_PUSHING_DELAY = 5 * 1000;
     public final static String ARDUINO_GET_DATA_COMMAND = "get_data";
-
 
     private RoomProfile roomProfile;
 
@@ -44,11 +48,15 @@ public class IntrusiveProfiler implements Profiler {
 
     private WeatherDataReceivedListener weatherDataReceivedListener = null;
     private ArduinoDataReceivedListener arduinoDataReceivedListener = null;
+    private DataAnalysisEndedListener dataAnalysisEndedListener = null;
 
     private WeatherData weatherData = new WeatherData();
     private ArduinoData arduinoData = new ArduinoData();
 
     private Timer timer;
+
+
+    private List<String> recommendations = new ArrayList<>();
 
     public IntrusiveProfiler(Context context, String roomId, RoomProfile roomProfile) {
         this.roomProfile = roomProfile;
@@ -60,6 +68,7 @@ public class IntrusiveProfiler implements Profiler {
 
 //        this.arduinoBoard = new ArduinoBoard();
         dbHandler = new DBHandler(roomId);
+
         bluetoothModule = new BluetoothModule(context);
         bluetoothModule.setDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
             @Override
@@ -96,6 +105,7 @@ public class IntrusiveProfiler implements Profiler {
 
         startPollingForWeatherData();
         startPollingForArduinoData();
+        startPushingReadingsToDB();
     }
 
     @Override
@@ -118,15 +128,38 @@ public class IntrusiveProfiler implements Profiler {
 
     @Override
     public void analyzeData() {
+
+        DatabaseReference roomReadingSnapshotsRef = dbHandler.getRoomReadingSnapshotsRef();
+
+        if (roomReadingSnapshotsRef != null) {
+
+            roomReadingSnapshotsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    // TODO: data analysis code goes here
+                    for (DataSnapshot readingDataSnapshot: dataSnapshot.getChildren()) {
+
+                        ReadingsSnapshot readingsSnapshot = readingDataSnapshot.getValue(ReadingsSnapshot.class);
+                        System.out.println(readingsSnapshot.getTimestamp());
+
+
+                    }
+
+                    // TODO: uncomment below when analysis finished
+                    // fire event
+//                    if(dataAnalysisEndedListener!= null){
+//                        dataAnalysisEndedListener.onDataAnalysisEnd();
+//                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
     }
 
-    // TODO: Is it really needed?
-    public void pushNewReadingsSnapshotToDB(ReadingsSnapshot readingsSnapshot) {
-        dbHandler.pushNewReadingsSnapshot(readingsSnapshot);
-    }
-
-    // TODO: change return type, if continue this way
-    // and not getting data by each component individually
     public void askForArduinoData() {
         bluetoothModule.sendMessage(ARDUINO_GET_DATA_COMMAND);
     }
@@ -180,6 +213,34 @@ public class IntrusiveProfiler implements Profiler {
         timer.scheduleAtFixedRate(task, 0, ARDUINO_POLLING_DELAY);
     }
 
+    private void startPushingReadingsToDB() {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                postAReadingsSnapshot();
+            }
+        };
+
+        timer.scheduleAtFixedRate(task, 0, DB_PUSHING_DELAY);
+    }
+
+    private void postAReadingsSnapshot() {
+        long timestamp = System.currentTimeMillis();
+        double temperatureIndoors = arduinoData.getTemperature();
+        double temperatureOutdoors = weatherData.getTemperature();
+        double humidityIndoors = arduinoData.getTemperature();
+        double humidityOutdoors = weatherData.getHumidity();
+        double lightLevel = lightSensor.getLightLevel();
+        double audioLevel = microphone.getAudioLevel();
+        double co = arduinoData.getCO();
+        double totalEnergyConsumption = arduinoData.getEnergyConsumption();
+
+        ReadingsSnapshot readingsSnapshot = new ReadingsSnapshot(timestamp, temperatureIndoors, temperatureOutdoors,
+                humidityIndoors, humidityOutdoors, lightLevel, audioLevel, co, totalEnergyConsumption);
+
+        dbHandler.pushNewReadingsSnapshot(readingsSnapshot);
+    }
+
     public LightSensor getLightSensor() {
         return lightSensor;
     }
@@ -196,12 +257,20 @@ public class IntrusiveProfiler implements Profiler {
         return arduinoData;
     }
 
+    public List<String> getRecommendations() {
+        return recommendations;
+    }
+
     public void setWeatherDataReceivedListener(WeatherDataReceivedListener weatherDataReceivedListener) {
         this.weatherDataReceivedListener = weatherDataReceivedListener;
     }
 
     public void setArduinoDataReceivedListener(ArduinoDataReceivedListener arduinoDataReceivedListener) {
         this.arduinoDataReceivedListener = arduinoDataReceivedListener;
+    }
+
+    public void setDataAnalysisEndedListener(DataAnalysisEndedListener dataAnalysisEndedListener) {
+        this.dataAnalysisEndedListener = dataAnalysisEndedListener;
     }
 
     public static interface WeatherDataReceivedListener {
@@ -212,5 +281,8 @@ public class IntrusiveProfiler implements Profiler {
         public void onArduinoDataReceived(ArduinoData arduinoData);
     }
 
+    public static interface DataAnalysisEndedListener {
+        public void onDataAnalysisEnd();
+    }
 
 }

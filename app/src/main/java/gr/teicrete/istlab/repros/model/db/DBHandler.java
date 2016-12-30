@@ -26,7 +26,7 @@ public class DBHandler {
         roomProfileRef = rootRef.child("rooms").child(roomId);
     }
 
-    public void prepareForProfiling(){
+    public void prepareForProfiling() {
         HashMap<String, Object> newRoomReadingMap = new HashMap<>();
         newRoomReadingMap.put("startTimestamp", System.currentTimeMillis());
         newRoomReadingMap.put("snapshots", null);
@@ -46,6 +46,8 @@ public class DBHandler {
     }
 
     public void pushNewReadingsSnapshot(ReadingsSnapshot readingsSnapshot) {
-        roomReadingSnapshotsRef.push().setValue(readingsSnapshot);
+        if (roomReadingSnapshotsRef != null) {
+            roomReadingSnapshotsRef.push().setValue(readingsSnapshot);
+        }
     }
 }

@@ -11,25 +11,25 @@ public class ReadingsSnapshot {
     private double temperatureOutdoors;
     private double humidityIndoors;
     private double humidityOutdoors;
-    private boolean motionDetected;
     private double lightLevel;
-    private double co2;
+    private double audioLevel;
+    private double co;
     private double totalEnergyConsumption;
 
     public ReadingsSnapshot() {
     }
 
     public ReadingsSnapshot(long timestamp, double temperatureIndoors, double temperatureOutdoors,
-                            double humidityIndoors, double humidityOutdoors, boolean motionDetected, double lightLevel,
-                            double co2, double totalEnergyConsumption) {
+                            double humidityIndoors, double humidityOutdoors, double lightLevel, double audioLevel,
+                            double co, double totalEnergyConsumption) {
         this.timestamp = timestamp;
         this.temperatureIndoors = temperatureIndoors;
         this.temperatureOutdoors = temperatureOutdoors;
         this.humidityIndoors = humidityIndoors;
         this.humidityOutdoors = humidityOutdoors;
-        this.motionDetected = motionDetected;
         this.lightLevel = lightLevel;
-        this.co2 = co2;
+        this.audioLevel = audioLevel;
+        this.co = co;
         this.totalEnergyConsumption = totalEnergyConsumption;
     }
 
@@ -53,16 +53,16 @@ public class ReadingsSnapshot {
         return humidityOutdoors;
     }
 
-    public boolean isMotionDetected() {
-        return motionDetected;
-    }
-
     public double getLightLevel() {
         return lightLevel;
     }
 
-    public double getCo2() {
-        return co2;
+    public double getAudioLevel() {
+        return audioLevel;
+    }
+
+    public double getCO() {
+        return co;
     }
 
     public double getTotalEnergyConsumption() {

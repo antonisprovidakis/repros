@@ -97,7 +97,7 @@ public class InitializationActivity extends AppCompatActivity {
             arduinoBTMacAddress = scannedData.getString("arduinoBTMacAddress");
 
             // show progress dialog
-            final ProgressDialog progressDialog = ProgressDialog.show(this, "Initializing", "Please wait...", true, true);
+            final ProgressDialog progressDialog = ProgressDialog.show(this, "Initializing", "Please wait...", true, false);
 
             wiFiModule.connectToAccessPoint(accessPointSSID, accessPointPassword);
             bluetoothModule.connectToDevice(arduinoBTMacAddress);

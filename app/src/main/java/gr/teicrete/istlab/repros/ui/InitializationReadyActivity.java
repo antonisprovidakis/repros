@@ -34,14 +34,8 @@ public class InitializationReadyActivity extends AppCompatActivity {
 
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
-    // TODO: replace ad-hoc roomId with the one coming from previous activity
-//    private DatabaseReference roomInfoRef;
-
-//    private DatabaseReference readingRoom2;
-
     private DBHandler dbHandler;
 
-    private String roomId;
     private RoomProfile roomProfile;
 
 
@@ -51,7 +45,7 @@ public class InitializationReadyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_initialization_ready);
 
 //        final String roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
-        roomId = "room_1"; // TODO: change ad-hoc roomId
+        final String roomId = "room_1"; // TODO: change ad-hoc roomId
         dbHandler = new DBHandler(roomId);
 
         tvInitializationReady = (TextView) findViewById(R.id.tv_initialization_ready);
@@ -63,6 +57,7 @@ public class InitializationReadyActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(InitializationReadyActivity.this, IntrusiveProfilingActivity.class);
                 intent.putExtra("EXTRA_ROOM_ID", roomId);
+                System.out.println("=========="+roomId);
                 intent.putExtra("EXTRA_ROOM_PROFILE", roomProfile);
                 startActivity(intent);
             }
