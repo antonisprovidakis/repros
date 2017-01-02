@@ -1,4 +1,4 @@
-package gr.teicrete.istlab.repros.ui;
+package gr.teicrete.istlab.repros.ui.charts;
 
 import android.content.Context;
 import android.view.View;

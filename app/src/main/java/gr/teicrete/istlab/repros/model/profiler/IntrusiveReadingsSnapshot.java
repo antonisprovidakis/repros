@@ -4,7 +4,7 @@ package gr.teicrete.istlab.repros.model.profiler;
  * Created by Antonis on 26-Dec-16.
  */
 
-public class ReadingsSnapshot {
+public class IntrusiveReadingsSnapshot {
 
     private long timestamp;
     private double temperatureIndoors;
@@ -16,12 +16,12 @@ public class ReadingsSnapshot {
     private double co;
     private double totalEnergyConsumption;
 
-    public ReadingsSnapshot() {
+    public IntrusiveReadingsSnapshot() {
     }
 
-    public ReadingsSnapshot(long timestamp, double temperatureIndoors, double temperatureOutdoors,
-                            double humidityIndoors, double humidityOutdoors, double lightLevel, double audioLevel,
-                            double co, double totalEnergyConsumption) {
+    public IntrusiveReadingsSnapshot(long timestamp, double temperatureIndoors, double temperatureOutdoors,
+                                     double humidityIndoors, double humidityOutdoors, double lightLevel, double audioLevel,
+                                     double co, double totalEnergyConsumption) {
         this.timestamp = timestamp;
         this.temperatureIndoors = temperatureIndoors;
         this.temperatureOutdoors = temperatureOutdoors;

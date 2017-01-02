@@ -1,4 +1,4 @@
-package gr.teicrete.istlab.repros.ui;
+package gr.teicrete.istlab.repros.ui.charts;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -17,6 +17,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.ui.ChartItem;
 
 public class PieChartItem extends ChartItem {
 
