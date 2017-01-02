@@ -21,12 +21,8 @@ public class RoomProfile implements Serializable {
     private Map<String, String> accessPointInfo;
     private List<HashMap<String, String>> installedAppliances;
     private List<HashMap<String, String>> installedSensors;
-    // TODO: use optimal values?
-//    private Map<String, Double> optimalTemperature;
-//    private Map<String, Double> optimalHumidity;
-
-//    private OptimalRange optimalTemperature;
-//    private OptimalRange optimalHumidity;
+    private Map<String, Double> optimumTemperature;
+    private Map<String, Double> optimumHumidity;
 
     public RoomProfile() {
     }
@@ -71,13 +67,13 @@ public class RoomProfile implements Serializable {
         return installedSensors;
     }
 
-//    public Map<String, Double> getOptimalTemperature() {
-//        return optimalTemperature;
-//    }
+    public Map<String, Double> getOptimumTemperature() {
+        return optimumTemperature;
+    }
 
-//    public Map<String, Double> getOptimalHumidity() {
-//        return optimalHumidity;
-//    }
+    public Map<String, Double> getOptimumHumidity() {
+        return optimumHumidity;
+    }
 
     @Override
     public String toString() {
@@ -85,20 +81,20 @@ public class RoomProfile implements Serializable {
                 " " + installedAppliances + " " + installedSensors;
     }
     
-    //    public OptimalRange getOptimalTemperature() {
-//        return optimalTemperature;
+    //    public OptimalRange getOptimumTemperature() {
+//        return optimumTemperature;
 //    }
 //
-//    public void setOptimalTemperature(OptimalRange optimalTemperature) {
-//        this.optimalTemperature = optimalTemperature;
+//    public void setOptimalTemperature(OptimalRange optimumTemperature) {
+//        this.optimumTemperature = optimumTemperature;
 //    }
 //
-//    public OptimalRange getOptimalHumidity() {
-//        return optimalHumidity;
+//    public OptimalRange getOptimumHumidity() {
+//        return optimumHumidity;
 //    }
 //
-//    public void setOptimalHumidity(OptimalRange optimalHumidity) {
-//        this.optimalHumidity = optimalHumidity;
+//    public void setOptimalHumidity(OptimalRange optimumHumidity) {
+//        this.optimumHumidity = optimumHumidity;
 //    }
 
 

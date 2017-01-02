@@ -9,7 +9,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.model.db.DBHandler;
+import gr.teicrete.istlab.repros.model.profiler.RecommendationsSet;
 
 
 /**
@@ -18,35 +27,22 @@ import gr.teicrete.istlab.repros.R;
  * create an instance of this fragment.
  */
 public class RecommendationsFragment extends ListFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String EXTRA_ROOM_ID = "EXTRA_ROOM_ID";
+    private static final String EXTRA_INTRUSIVE = "EXTRA_INTRUSIVE";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String roomId;
+    private boolean intrusive;
 
-    private String[] recommendationsArray = {"Recommendation 1 ", "Recommendation 2", "Recommendation 3"};
+    private DBHandler dbHandler;
 
     public RecommendationsFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RecommendationsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RecommendationsFragment newInstance(String param1, String param2) {
+    public static RecommendationsFragment newInstance(String roomId, boolean intrusive) {
         RecommendationsFragment fragment = new RecommendationsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(EXTRA_ROOM_ID, roomId);
+        args.putBoolean(EXTRA_INTRUSIVE, intrusive);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,8 +51,11 @@ public class RecommendationsFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            roomId = getArguments().getString(EXTRA_ROOM_ID);
+            intrusive = getArguments().getBoolean(EXTRA_INTRUSIVE);
+
+            dbHandler = new DBHandler(roomId, intrusive);
+
         }
     }
 
@@ -65,10 +64,38 @@ public class RecommendationsFragment extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        ListAdapter listAdapter = new ArrayAdapter<String>(this.getContext(), R.layout.list_item_recommendation, recommendationsArray);
-        ListAdapter listAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_list_item_1, recommendationsArray);
-        setListAdapter(listAdapter);
+
+        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String key = (String) dataSnapshot.getValue();
+
+                dbHandler.getRecommendationsRef(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
+
+                        final List<String> recommendations = (List<String>) dataSnapshot.getValue();
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ListAdapter listAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, recommendations);
+                                setListAdapter(listAdapter);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
     }
-
 }

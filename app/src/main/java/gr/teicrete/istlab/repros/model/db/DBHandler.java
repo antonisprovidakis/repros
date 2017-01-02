@@ -2,10 +2,13 @@ package gr.teicrete.istlab.repros.model.db;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.HashMap;
+import java.util.List;
 
-import gr.teicrete.istlab.repros.model.profiler.ReadingsSnapshot;
+import gr.teicrete.istlab.repros.model.profiler.NonIntrusiveReadingsSnapshot;
+import gr.teicrete.istlab.repros.model.profiler.IntrusiveReadingsSnapshot;
 
 /**
  * Created by Antonis on 26-Dec-16.
@@ -14,40 +17,143 @@ import gr.teicrete.istlab.repros.model.profiler.ReadingsSnapshot;
 public class DBHandler {
 
     private DatabaseReference rootRef = null;
-    private DatabaseReference roomProfileRef = null;
-    private DatabaseReference roomReadingSnapshotsRef = null;
 
-    private String roomId;
+    private DatabaseReference readingSnapshotsRef = null;
+    private DatabaseReference roomRef = null;
+    private DatabaseReference recommendationsRef = null;
 
-    public DBHandler(String roomId) {
+    private String roomId = null;
+    private boolean intrusiveProfiling = false;
+
+
+    public DBHandler(String roomId, boolean intrusiveProfiling) {
         this.roomId = roomId;
+        this.intrusiveProfiling = intrusiveProfiling;
 
         rootRef = FirebaseDatabase.getInstance().getReference();
-        roomProfileRef = rootRef.child("rooms").child(roomId);
+
+        if (intrusiveProfiling) {
+            roomRef = rootRef.child("rooms").child(roomId);
+        }
     }
 
     public void prepareForProfiling() {
         HashMap<String, Object> newRoomReadingMap = new HashMap<>();
         newRoomReadingMap.put("startTimestamp", System.currentTimeMillis());
         newRoomReadingMap.put("snapshots", null);
-        DatabaseReference newRoomReading = rootRef.child("readings").child(roomId).push();
+        newRoomReadingMap.put("recommendations", null);
+
+        DatabaseReference readingsRoomRef;
+        DatabaseReference newRoomReading;
+
+        if (intrusiveProfiling) {
+            readingsRoomRef = rootRef.child("readings").child(roomId);
+        } else {
+            readingsRoomRef = rootRef.child("readings").child("temp").child(roomId);
+//            readingsRoomRef.setValue(newRoomReadingMap);
+//            readingSnapshotsRef = readingsRoomRef.child("snapshots");
+//            recommendationsRef = readingsRoomRef.child("recommendations");
+        }
+        newRoomReading = readingsRoomRef.push();
         newRoomReading.setValue(newRoomReadingMap);
 
         String key = newRoomReading.getKey();
-        roomReadingSnapshotsRef = rootRef.child("readings").child(roomId).child(key).child("snapshots");
+
+        createLastReadingRecordForRoom(roomId, key);
+
+        readingSnapshotsRef = readingsRoomRef.child(key).child("snapshots");
+        recommendationsRef = readingsRoomRef.child(key).child("recommendations");
     }
 
-    public DatabaseReference getRoomProfileRef() {
-        return roomProfileRef;
+    private void createLastReadingRecordForRoom(String roomId, String lastReadingKey) {
+
+        if (intrusiveProfiling) {
+            rootRef.child("lastReadingsForRooms").child(roomId).setValue(lastReadingKey);
+        } else {
+            rootRef.child("lastReadingsForRooms").child("temp").child(roomId).setValue(lastReadingKey);
+        }
     }
 
-    public DatabaseReference getRoomReadingSnapshotsRef() {
-        return roomReadingSnapshotsRef;
+    public Query getlastReadingKeyRef() {
+
+        Query lastReadingQuery;
+
+        if (intrusiveProfiling) {
+            lastReadingQuery = rootRef.child("lastReadingsForRooms").child(roomId);
+        } else {
+            lastReadingQuery = rootRef.child("lastReadingsForRooms").child("temp").child(roomId);
+        }
+
+        return lastReadingQuery;
     }
 
-    public void pushNewReadingsSnapshot(ReadingsSnapshot readingsSnapshot) {
-        if (roomReadingSnapshotsRef != null) {
-            roomReadingSnapshotsRef.push().setValue(readingsSnapshot);
+//    public void prepareForFetchingData(String lastReadingKey) {
+//
+//        DatabaseReference readingsRoomRef;
+//
+//        if (intrusiveProfiling) {
+//            readingsRoomRef = rootRef.child("readings").child(roomId).child(lastReadingKey);
+//        } else {
+//            readingsRoomRef = rootRef.child("readings").child("temp").child(roomId).child(lastReadingKey);
+//        }
+//
+//        readingSnapshotsRef = readingsRoomRef.child("snapshots");
+//        recommendationsRef = readingsRoomRef.child("recommendations");
+//    }
+
+    public void removeTemporaryReadingsSnapshots() {
+        if (!intrusiveProfiling) {
+            DatabaseReference ref = rootRef.child("readings").child("temp").child(roomId);
+            ref.removeValue();
+            ref = rootRef.child("lastReadingsForRooms").child("temp").child(roomId);
+            ref.removeValue();
+        }
+    }
+
+    public DatabaseReference getRecommendationsRef(String lastReadingKey) {
+
+        DatabaseReference ref;
+
+        if (intrusiveProfiling) {
+            ref = rootRef.child("readings").child(roomId).child(lastReadingKey).child("recommendations");
+        } else {
+            ref = rootRef.child("readings").child("temp").child(roomId).child(lastReadingKey).child("recommendations");
+        }
+        return ref;
+    }
+
+    public DatabaseReference getRoomRef() {
+        return roomRef;
+    }
+
+    public Query getReadingSnapshotsRef(String lastReadingKey) {
+
+        Query ref;
+
+        if (intrusiveProfiling) {
+            ref = rootRef.child("readings").child(roomId).child(lastReadingKey).child("snapshots").orderByKey();
+        } else {
+            ref = rootRef.child("readings").child("temp").child(roomId).child(lastReadingKey).child("snapshots").orderByKey();
+        }
+
+        return ref;
+    }
+
+    public void pushNewIntrusiveReadingSnapshot(IntrusiveReadingsSnapshot intrusiveReadingSnapshot) {
+        if (readingSnapshotsRef != null) {
+            readingSnapshotsRef.push().setValue(intrusiveReadingSnapshot);
+        }
+    }
+
+    public void pushNewNonIntrusiveReadingSnapshot(NonIntrusiveReadingsSnapshot nonIntrusiveReadingSnapshot) {
+        if (readingSnapshotsRef != null) {
+            readingSnapshotsRef.push().setValue(nonIntrusiveReadingSnapshot);
+        }
+    }
+
+    public void pushRecommendations(List<String> recommendations) {
+        if (recommendationsRef != null) {
+            recommendationsRef.setValue(recommendations);
         }
     }
 }

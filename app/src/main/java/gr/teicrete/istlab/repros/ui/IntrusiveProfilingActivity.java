@@ -29,7 +29,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
 
     private static final String TAG = "IntrusProfilActivity";
 
-    private SpeedometerGauge gaugeSoundLevel;
+    private SpeedometerGauge gaugeAudioLevel;
     private SpeedometerGauge gaugeLightLevel;
     private SpeedometerGauge gaugeTempIn;
     private SpeedometerGauge gaugeTempOut;
@@ -51,8 +51,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intrusive_profiling);
 
-//        roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
-        roomId = "room_1"; // TODO: change ad-hoc roomId
+        roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
         roomProfile = (RoomProfile) getIntent().getSerializableExtra("EXTRA_ROOM_PROFILE");
 
         btnStop = (Button) findViewById(R.id.btn_stop);
@@ -84,14 +83,14 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
         profiler.getMicrophone().setOnDataSensedListener(new SKSensorDataListener() {
             @Override
             public void onDataReceived(SKSensorModuleType skSensorModuleType, SKSensorData skSensorData) {
-                final SKAudioLevelData audioData = (SKAudioLevelData) skSensorData;
+                SKAudioLevelData audioData = (SKAudioLevelData) skSensorData;
                 final double audioLevel = (20 * Math.log10(audioData.getLevel() / 4));
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (audioLevel >= 0) {
-                            gaugeSoundLevel.setSpeed(audioLevel);
+                            gaugeAudioLevel.setSpeed(audioLevel);
                         }
                     }
                 });
@@ -106,12 +105,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
                     public void run() {
                         gaugeTempOut.setSpeed(weatherData.getTemperature());
                         gaugeHumidOut.setSpeed(weatherData.getHumidity());
-
                     }
-
-                    // push in local variable ???
-
-                    // send to firebase ???
                 });
             }
         });
@@ -204,8 +198,14 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
                 profiler.setDataAnalysisEndedListener(new IntrusiveProfiler.DataAnalysisEndedListener() {
                     @Override
                     public void onDataAnalysisEnd() {
-                        progressDialog.dismiss();
-                        showDisplayResultsButton();
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressDialog.dismiss();
+                                showDisplayResultsButton();
+                            }
+                        });
                     }
                 });
 
@@ -223,22 +223,22 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
     }
 
     private void setupGauges() {
-        gaugeSoundLevel = (SpeedometerGauge) findViewById(R.id.gauge_sound_level);
+        gaugeAudioLevel = (SpeedometerGauge) findViewById(R.id.gauge_audio_level);
 
-        gaugeSoundLevel.setMajorTickStep(10);
+        gaugeAudioLevel.setMajorTickStep(10);
 
-        gaugeSoundLevel.setLabelConverter(new SpeedometerGauge.LabelConverter() {
+        gaugeAudioLevel.setLabelConverter(new SpeedometerGauge.LabelConverter() {
             @Override
             public String getLabelFor(double progress, double maxProgress) {
                 return String.valueOf((int) Math.round(progress));
             }
         });
 
-        gaugeSoundLevel.setUnitsText("dB");
-        gaugeSoundLevel.setMaxSpeed(120);
-        gaugeSoundLevel.addColoredRange(0, 60, Color.GREEN);
-        gaugeSoundLevel.addColoredRange(61, 100, Color.YELLOW);
-        gaugeSoundLevel.addColoredRange(101, 120, Color.RED);
+        gaugeAudioLevel.setUnitsText("dB");
+        gaugeAudioLevel.setMaxSpeed(120);
+        gaugeAudioLevel.addColoredRange(0, 60, Color.GREEN);
+        gaugeAudioLevel.addColoredRange(61, 100, Color.YELLOW);
+        gaugeAudioLevel.addColoredRange(101, 120, Color.RED);
 
 
         gaugeLightLevel = (SpeedometerGauge) findViewById(R.id.gauge_light_level);
@@ -371,7 +371,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
     }
 
     private void resetGauges() {
-        gaugeSoundLevel.setSpeed(0);
+        gaugeAudioLevel.setSpeed(0);
         gaugeLightLevel.setSpeed(0);
         gaugeTempIn.setSpeed(0);
         gaugeTempOut.setSpeed(0);
@@ -387,7 +387,7 @@ public class IntrusiveProfilingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(IntrusiveProfilingActivity.this, IntrusiveAssessmentActivity.class);
-//                intent.putExtra("EXTRA_ROOM_ID", roomId);
+                intent.putExtra("EXTRA_ROOM_ID", roomId);
                 startActivity(intent);
             }
         });

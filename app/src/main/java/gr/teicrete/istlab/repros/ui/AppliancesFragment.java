@@ -11,7 +11,15 @@ import android.widget.Switch;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import java.util.HashMap;
+
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.model.db.DBHandler;
+import gr.teicrete.istlab.repros.model.microcontroller.AirConditioner;
+import gr.teicrete.istlab.repros.model.microcontroller.Appliance;
+import gr.teicrete.istlab.repros.model.microcontroller.ArduinoBoard;
+import gr.teicrete.istlab.repros.model.microcontroller.Lightbulb;
+import gr.teicrete.istlab.repros.model.microcontroller.Window;
 
 
 /**
@@ -20,34 +28,22 @@ import gr.teicrete.istlab.repros.R;
  * create an instance of this fragment.
  */
 public class AppliancesFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String EXTRA_ROOM_ID = "EXTRA_ROOM_ID";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String roomId;
+    private DBHandler dbHandler;
+    private ArduinoBoard arduinoBoard;
 
 
     public AppliancesFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AppliancesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AppliancesFragment newInstance(String param1, String param2) {
+
+    public static AppliancesFragment newInstance(String roomId) {
         AppliancesFragment fragment = new AppliancesFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(EXTRA_ROOM_ID, roomId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,24 +52,74 @@ public class AppliancesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            roomId = getArguments().getString(EXTRA_ROOM_ID);
+
+            dbHandler = new DBHandler(roomId, true);
+
+            Lightbulb lightbulb = new Lightbulb(getActivity().getApplicationContext(), "lightbulb_1");
+            AirConditioner airConditioner = new AirConditioner(getActivity().getApplicationContext(), "air_conditioner_1", 100, 17, 20000);
+            Window window = new Window(getActivity().getApplicationContext(), "window_1");
+
+            HashMap<String, Appliance> appliances = new HashMap<>();
+
+            appliances.put(lightbulb.getId(), lightbulb);
+            appliances.put(airConditioner.getId(), airConditioner);
+            appliances.put(window.getId(), window);
+
+            arduinoBoard = new ArduinoBoard(appliances);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_appliances, container, false);
 
-        // do any UI initializations
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-//            return rootView;
+//        final ViewGroup containerLayout = (ViewGroup) rootView.findViewById(R.id.appliances_container_layout);
+//
+//        dbHandler.getRoomRef().child("installedAppliances").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(final DataSnapshot dataSnapshotInstalledAppliances) {
+//
+//                for (DataSnapshot readingDataSnapshot : dataSnapshotInstalledAppliances.getChildren()) {
+//
+//                    Map<String, String> appliance = (Map<String, String>) readingDataSnapshot.getValue();
+//
+//
+//                    View viewAppliance = Util.createApplianceViewFromType(getContext(), appliance.get("type"), containerLayout);
+//
+//                    System.out.println(viewAppliance.getHeight());
+//                    View divider = inflater.inflate(R.layout.simple_divider, containerLayout, false);
+//
+//                    containerLayout.addView(viewAppliance);
+//                    containerLayout.addView(divider);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//            }
+//        });
+
+        Switch lightsSwitch = (Switch) rootView.findViewById(R.id.switch_lights);
+        lightsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Appliance lightbulb = arduinoBoard.getApplianceWithId("lightbulb_1");
+
+                if (isChecked) {
+                    lightbulb.turnOn();
+                } else {
+                    lightbulb.turnOff();
+                }
+            }
+        });
+
 
         Switch acSwitch = (Switch) rootView.findViewById(R.id.switch_ac);
-        final DiscreteSeekBar acSeekbar= (DiscreteSeekBar) rootView.findViewById(R.id.seekbar_ac);
+        final DiscreteSeekBar acSeekbar = (DiscreteSeekBar) rootView.findViewById(R.id.seekbar_ac);
         acSeekbar.setEnabled(false);
 
         acSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

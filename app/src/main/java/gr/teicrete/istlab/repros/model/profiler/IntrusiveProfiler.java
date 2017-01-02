@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -12,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,7 +48,7 @@ public class IntrusiveProfiler implements Profiler {
 
     private WeatherDataReceivedListener weatherDataReceivedListener = null;
     private ArduinoDataReceivedListener arduinoDataReceivedListener = null;
-    private DataAnalysisEndedListener dataAnalysisEndedListener = null;
+    private Profiler.DataAnalysisEndedListener dataAnalysisEndedListener = null;
 
     private WeatherData weatherData = new WeatherData();
     private ArduinoData arduinoData = new ArduinoData();
@@ -67,7 +67,7 @@ public class IntrusiveProfiler implements Profiler {
         sensors.add(microphone);
 
 //        this.arduinoBoard = new ArduinoBoard();
-        dbHandler = new DBHandler(roomId);
+        dbHandler = new DBHandler(roomId, true);
 
         bluetoothModule = new BluetoothModule(context);
         bluetoothModule.setDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
@@ -129,35 +129,64 @@ public class IntrusiveProfiler implements Profiler {
     @Override
     public void analyzeData() {
 
-        DatabaseReference roomReadingSnapshotsRef = dbHandler.getRoomReadingSnapshotsRef();
+        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String key = (String) dataSnapshot.getValue();
 
-        if (roomReadingSnapshotsRef != null) {
+                dbHandler.getReadingSnapshotsRef(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+//
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
 
-            roomReadingSnapshotsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                            /*
+                            for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-                    // TODO: data analysis code goes here
-                    for (DataSnapshot readingDataSnapshot: dataSnapshot.getChildren()) {
+                                IntrusiveReadingsSnapshot intrusiveReadingsSnapshot = readingDataSnapshot.getValue(IntrusiveReadingsSnapshot.class);
 
-                        ReadingsSnapshot readingsSnapshot = readingDataSnapshot.getValue(ReadingsSnapshot.class);
-                        System.out.println(readingsSnapshot.getTimestamp());
+                                long timestamp = intrusiveReadingsSnapshot.getTimestamp();
+                                double temperatureIndoors = intrusiveReadingsSnapshot.getTemperatureIndoors();
+                                double temperatureOutdoors = intrusiveReadingsSnapshot.getTemperatureOutdoors();
+                                double humidityIndoors = intrusiveReadingsSnapshot.getHumidityIndoors();
+                                double humidityOutdoors = intrusiveReadingsSnapshot.getHumidityOutdoors();
+                                double lightLevel = intrusiveReadingsSnapshot.getLightLevel();
+                                double audioLevel = intrusiveReadingsSnapshot.getAudioLevel();
+                                double co = intrusiveReadingsSnapshot.getCO();
+                                double totalEnergyConsumption = intrusiveReadingsSnapshot.getTotalEnergyConsumption();
 
+
+                                // TODO: some algorithm runs here in order to generate recommendations
+                            }
+                            */
+
+                                List<String> recommendations = Arrays.asList(new String[]{RecommendationsSet.INTRUSIVE_CO});
+
+                                dbHandler.pushRecommendations(recommendations);
+
+                                // fire event
+                                if (dataAnalysisEndedListener != null) {
+                                    dataAnalysisEndedListener.onDataAnalysisEnd();
+                                }
+                            }
+                        }).start();
 
                     }
 
-                    // TODO: uncomment below when analysis finished
-                    // fire event
-//                    if(dataAnalysisEndedListener!= null){
-//                        dataAnalysisEndedListener.onDataAnalysisEnd();
-//                    }
-                }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
     }
 
     public void askForArduinoData() {
@@ -217,28 +246,28 @@ public class IntrusiveProfiler implements Profiler {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                postAReadingsSnapshot();
+                pushReadingsSnapshot();
             }
         };
 
         timer.scheduleAtFixedRate(task, 0, DB_PUSHING_DELAY);
     }
 
-    private void postAReadingsSnapshot() {
+    private void pushReadingsSnapshot() {
         long timestamp = System.currentTimeMillis();
         double temperatureIndoors = arduinoData.getTemperature();
         double temperatureOutdoors = weatherData.getTemperature();
-        double humidityIndoors = arduinoData.getTemperature();
+        double humidityIndoors = arduinoData.getHumidity();
         double humidityOutdoors = weatherData.getHumidity();
         double lightLevel = lightSensor.getLightLevel();
         double audioLevel = microphone.getAudioLevel();
         double co = arduinoData.getCO();
         double totalEnergyConsumption = arduinoData.getEnergyConsumption();
 
-        ReadingsSnapshot readingsSnapshot = new ReadingsSnapshot(timestamp, temperatureIndoors, temperatureOutdoors,
+        IntrusiveReadingsSnapshot intrusiveReadingsSnapshot = new IntrusiveReadingsSnapshot(timestamp, temperatureIndoors, temperatureOutdoors,
                 humidityIndoors, humidityOutdoors, lightLevel, audioLevel, co, totalEnergyConsumption);
 
-        dbHandler.pushNewReadingsSnapshot(readingsSnapshot);
+        dbHandler.pushNewIntrusiveReadingSnapshot(intrusiveReadingsSnapshot);
     }
 
     public LightSensor getLightSensor() {
@@ -269,7 +298,7 @@ public class IntrusiveProfiler implements Profiler {
         this.arduinoDataReceivedListener = arduinoDataReceivedListener;
     }
 
-    public void setDataAnalysisEndedListener(DataAnalysisEndedListener dataAnalysisEndedListener) {
+    public void setDataAnalysisEndedListener(Profiler.DataAnalysisEndedListener dataAnalysisEndedListener) {
         this.dataAnalysisEndedListener = dataAnalysisEndedListener;
     }
 
@@ -280,9 +309,4 @@ public class IntrusiveProfiler implements Profiler {
     public static interface ArduinoDataReceivedListener {
         public void onArduinoDataReceived(ArduinoData arduinoData);
     }
-
-    public static interface DataAnalysisEndedListener {
-        public void onDataAnalysisEnd();
-    }
-
 }

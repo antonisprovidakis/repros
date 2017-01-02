@@ -17,7 +17,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import gr.teicrete.istlab.repros.R;
-import gr.teicrete.istlab.repros.ui.ChartItem;
 
 public class PieChartItem extends ChartItem {
 

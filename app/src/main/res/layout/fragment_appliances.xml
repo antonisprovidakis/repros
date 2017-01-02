@@ -18,6 +18,7 @@
         android:layout_marginBottom="8dp">
 
         <LinearLayout
+            android:id="@+id/appliances_container_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

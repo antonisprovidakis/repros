@@ -25,18 +25,20 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_define_timeframe">
+        android:layout_below="@id/tv_define_timeframe"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp">
 
         <Spinner
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/spinner_time_selection"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:layout_width="wrap_content" />
 
         <Spinner
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/spinner_unit_selection"
             android:layout_weight="1"/>

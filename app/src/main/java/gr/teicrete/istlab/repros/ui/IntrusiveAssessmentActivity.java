@@ -1,5 +1,6 @@
 package gr.teicrete.istlab.repros.ui;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,10 +10,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.model.db.DBHandler;
 
 public class IntrusiveAssessmentActivity extends AppCompatActivity {
+
+    private Button btnEndSession;
+
+    private String roomId;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -33,6 +42,19 @@ public class IntrusiveAssessmentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intrusive_assessment);
+
+        roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
+
+        btnEndSession = (Button) findViewById(R.id.btn_end_session);
+        btnEndSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(IntrusiveAssessmentActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,12 +95,11 @@ public class IntrusiveAssessmentActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
 
             if (position == 0) {
-                return NonIntrusiveResultsFragment.newInstance("Maria", "Nikos");
+                return IntrusiveResultsFragment.newInstance(roomId);
             } else if (position == 1) {
-                return RecommendationsFragment.newInstance("Maria", "Nikos");
-            }
-            else if (position == 2) {
-                return AppliancesFragment.newInstance("Maria", "Nikos");
+                return RecommendationsFragment.newInstance(roomId, true);
+            } else if (position == 2) {
+                return AppliancesFragment.newInstance(roomId);
             }
 
             return null;

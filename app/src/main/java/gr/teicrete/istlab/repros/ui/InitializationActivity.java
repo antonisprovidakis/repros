@@ -60,7 +60,6 @@ public class InitializationActivity extends AppCompatActivity {
             if (result.getContents() == null) {
                 Toast.makeText(this, "Scan cancelled", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 try {
                     JSONObject scannedData = new JSONObject(result.getContents());
                     initConnections(scannedData);

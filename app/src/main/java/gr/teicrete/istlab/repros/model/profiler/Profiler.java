@@ -14,4 +14,7 @@ public interface Profiler {
 
     public void analyzeData();
 
+    public interface DataAnalysisEndedListener {
+        public void onDataAnalysisEnd();
+    }
 }

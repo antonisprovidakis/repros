@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -44,9 +45,8 @@ public class InitializationReadyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initialization_ready);
 
-//        final String roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
-        final String roomId = "room_1"; // TODO: change ad-hoc roomId
-        dbHandler = new DBHandler(roomId);
+        final String roomId = getIntent().getStringExtra("EXTRA_ROOM_ID");
+        dbHandler = new DBHandler(roomId, true);
 
         tvInitializationReady = (TextView) findViewById(R.id.tv_initialization_ready);
 
@@ -57,7 +57,6 @@ public class InitializationReadyActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(InitializationReadyActivity.this, IntrusiveProfilingActivity.class);
                 intent.putExtra("EXTRA_ROOM_ID", roomId);
-                System.out.println("=========="+roomId);
                 intent.putExtra("EXTRA_ROOM_PROFILE", roomProfile);
                 startActivity(intent);
             }
@@ -68,21 +67,27 @@ public class InitializationReadyActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        dbHandler.getRoomProfileRef().addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                roomProfile = dataSnapshot.getValue(RoomProfile.class);
-                setupRoomInfo(roomProfile);
+        Query ref = dbHandler.getRoomRef();
 
-                tvInitializationReady.setText("You are ready to start profiling");
-                btn_intrusive_start_profiling.setVisibility(View.VISIBLE);
-            }
+        if (ref != null) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Error: " + databaseError.getMessage());
-            }
-        });
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    roomProfile = dataSnapshot.getValue(RoomProfile.class);
+                    setupRoomInfo(roomProfile);
+
+                    tvInitializationReady.setText("You are ready to start profiling");
+                    btn_intrusive_start_profiling.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("Error: " + databaseError.getMessage());
+                }
+            });
+        }
+
     }
 
     @Override
@@ -111,6 +116,11 @@ public class InitializationReadyActivity extends AppCompatActivity {
         genericInfoList.add(new String[]{"Room Name", roomProfile.getRoomName()});
         genericInfoList.add(new String[]{"Latitude", String.valueOf(roomProfile.getLatitude())});
         genericInfoList.add(new String[]{"Longitude", String.valueOf(roomProfile.getLongitude())});
+
+        genericInfoList.add(new String[]{"Min Temperature (°C)", String.valueOf(roomProfile.getOptimumTemperature().get("min"))});
+        genericInfoList.add(new String[]{"Max Temperature (°C)", String.valueOf(roomProfile.getOptimumTemperature().get("max"))});
+        genericInfoList.add(new String[]{"Min Humidity (%)", String.valueOf(roomProfile.getOptimumHumidity().get("min"))});
+        genericInfoList.add(new String[]{"Max Humidity (%)", String.valueOf(roomProfile.getOptimumHumidity().get("max"))});
 
         ArrayAdapter<String[]> genericListAdapter = new ArrayAdapter<String[]>(this, android.R.layout.simple_list_item_2, android.R.id.text1, genericInfoList) {
             @NonNull

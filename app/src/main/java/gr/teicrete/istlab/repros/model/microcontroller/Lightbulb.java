@@ -1,5 +1,6 @@
 package gr.teicrete.istlab.repros.model.microcontroller;
 
+import android.content.Context;
 import android.graphics.Color;
 
 /**
@@ -8,20 +9,18 @@ import android.graphics.Color;
 
 public class Lightbulb extends ElectricAppliance {
 
-    private int color;
+    private int color = Color.WHITE;
 
-    public Lightbulb(String id) {
-        super(id);
-        color = Color.WHITE;
+    public Lightbulb(Context context, String id) {
+        this(context, id, id);
     }
 
-    public Lightbulb(String id, String name) {
-        super(id, name);
-        color = Color.WHITE;
+    public Lightbulb(Context context, String id, String name) {
+        super(context, id, name);
     }
 
-    public Lightbulb(String id, int watt, int color) {
-        super(id, watt);
+    public Lightbulb(Context context, String id, int watt, int color) {
+        super(context, id, watt);
         this.color = color;
     }
 

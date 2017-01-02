@@ -5,4 +5,43 @@ package gr.teicrete.istlab.repros.model.profiler;
  */
 
 public class NonIntrusiveReadingsSnapshot {
+
+    private long timestamp;
+    private boolean motionDetected;
+    private double lightLevel;
+    private double audioLevel;
+
+    public NonIntrusiveReadingsSnapshot() {
+    }
+
+    public NonIntrusiveReadingsSnapshot(long timestamp, boolean motionDetected, double lightLevel, double audioLevel) {
+        this.timestamp = timestamp;
+        this.motionDetected = motionDetected;
+        this.lightLevel = lightLevel;
+        this.audioLevel = audioLevel;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public boolean isMotionDetected() {
+        return motionDetected;
+    }
+
+    public double getLightLevel() {
+        return lightLevel;
+    }
+
+    public double getAudioLevel() {
+        return audioLevel;
+    }
+
+    public static double booleanToDouble(boolean value) {
+        if (value) {
+            return 1.0;
+        } else {
+            return 0;
+        }
+    }
 }

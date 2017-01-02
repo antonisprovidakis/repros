@@ -1,28 +1,27 @@
 package gr.teicrete.istlab.repros.model.microcontroller;
 
+import android.content.Context;
+
 /**
  * Created by Antonis on 25-Dec-16.
  */
 
 public abstract class ElectricAppliance extends Appliance {
 
-    private int watt;
+    private int watt = 0;
 
-    public ElectricAppliance(String id) {
-        super(id);
-        watt = 0;
+    public ElectricAppliance(Context context, String id) {
+        this(context, id, 0);
     }
 
-    public ElectricAppliance(String id, String name) {
-        super(id, name);
-        watt = 0;
+    public ElectricAppliance(Context context, String id, String name) {
+        super(context, id, name);
     }
 
-    public ElectricAppliance(String id, int watt){
-        super(id);
+    public ElectricAppliance(Context context, String id, int watt){
+        this(context, id, id);
         this.watt = watt;
     }
-
 
     public int getWatt() {
         return watt;

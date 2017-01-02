@@ -30,8 +30,7 @@ public class Microphone implements MobileSensor {
                 @Override
                 public void onDataReceived(SKSensorModuleType skSensorModuleType, SKSensorData skSensorData) {
                     SKAudioLevelData audioData = (SKAudioLevelData) skSensorData;
-                    audioLevel = (20 * Math.log10(audioData.getLevel() / 0.6)); // update internal state
-
+                    audioLevel = (20 * Math.log10(audioData.getLevel() / 4)); // update internal state
                 }
             });
         } catch (SKException e) {

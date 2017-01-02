@@ -70,5 +70,4 @@ public class LightSensor implements MobileSensor {
     public void setOnDataSensedListener(Object listener) {
         skSensorDataListener = (SKSensorDataListener) listener;
     }
-
 }

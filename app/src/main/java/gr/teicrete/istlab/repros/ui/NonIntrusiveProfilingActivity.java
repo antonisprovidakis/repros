@@ -2,17 +2,18 @@ package gr.teicrete.istlab.repros.ui;
 
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.cardiomood.android.controls.gauge.SpeedometerGauge;
 import com.jwetherell.motiondetection.detection.MotionStateChangeListener;
@@ -25,6 +26,7 @@ import org.sensingkit.sensingkitlib.data.SKSensorData;
 
 import cn.iwgang.countdownview.CountdownView;
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.model.profiler.IntrusiveProfiler;
 import gr.teicrete.istlab.repros.model.profiler.NonIntrusiveProfiler;
 
 public class NonIntrusiveProfilingActivity extends AppCompatActivity {
@@ -36,7 +38,7 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
     private ImageView imageViewMotion;
     private SurfaceView surfaceView;
 
-    private SpeedometerGauge gaugeSoundLevel;
+    private SpeedometerGauge gaugeAudioLevel;
     private SpeedometerGauge gaugeLightLevel;
 
     private Button btnStop;
@@ -45,13 +47,17 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
 
     private long profilingMillis;
 
+    private String uniqueId;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_non_intrusive_profiling);
 
-        profilingMillis = getIntent().getLongExtra("EXTRA_PROFILING_MILLIS", 30000);
+        uniqueId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        profilingMillis = getIntent().getLongExtra("EXTRA_PROFILING_MILLIS", 10000);
 
         imageViewMotion = (ImageView) findViewById(R.id.image_view_motion);
 
@@ -71,22 +77,17 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
         countdownTimer.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
             @Override
             public void onEnd(CountdownView cv) {
-                profiler.stopProfiling();
-                resetGauges();
-                Toast.makeText(NonIntrusiveProfilingActivity.this, "timer ended", Toast.LENGTH_SHORT).show();
-                showDisplayResultsButton();
+                endProfilingAndAnalyze();
             }
         });
 
 
-        profiler = new NonIntrusiveProfiler(getApplicationContext());
+        profiler = new NonIntrusiveProfiler(getApplicationContext(), uniqueId);
 
         profiler.getCamera().setSurfacePreview(surfaceView);
         profiler.getCamera().setOnDataSensedListener(new MotionStateChangeListener() {
             @Override
             public void onMotionStateChange(final boolean motionDetected) {
-                System.out.println(motionDetected);
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -103,22 +104,28 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
         profiler.getLightSensor().setOnDataSensedListener(new SKSensorDataListener() {
             @Override
             public void onDataReceived(SKSensorModuleType skSensorModuleType, SKSensorData skSensorData) {
-                SKLightData lightData = (SKLightData) skSensorData;
-                gaugeLightLevel.setSpeed(lightData.getLight());
+                final SKLightData lightData = (SKLightData) skSensorData;
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        gaugeLightLevel.setSpeed(lightData.getLight());
+                    }
+                });
             }
         });
 
         profiler.getMicrophone().setOnDataSensedListener(new SKSensorDataListener() {
             @Override
             public void onDataReceived(SKSensorModuleType skSensorModuleType, SKSensorData skSensorData) {
-                final SKAudioLevelData audioData = (SKAudioLevelData) skSensorData;
+                SKAudioLevelData audioData = (SKAudioLevelData) skSensorData;
                 final double audioLevel = (20 * Math.log10(audioData.getLevel() / 4));
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (audioLevel >= 0) {
-                            gaugeSoundLevel.setSpeed(audioLevel);
+                            gaugeAudioLevel.setSpeed(audioLevel);
                         }
                     }
                 });
@@ -146,7 +153,6 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
         super.onStop();
 
         profiler.stopProfiling();
-//        profiler = null;
         countdownTimer.stop();
         countdownTimer.allShowZero();
         resetGauges();
@@ -182,13 +188,10 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Stop", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Log.i(TAG, "stop clicked");
-                profiler.stopProfiling();
-                resetGauges();
                 countdownTimer.stop();
                 countdownTimer.allShowZero();
 
-                showDisplayResultsButton();
+                endProfilingAndAnalyze();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -201,23 +204,46 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void endProfilingAndAnalyze() {
+        profiler.stopProfiling();
+        resetGauges();
+        btnStop.setVisibility(View.INVISIBLE);
+
+        final ProgressDialog progressDialog = ProgressDialog.show(NonIntrusiveProfilingActivity.this, "Analyzing Data", "Please wait...", true, false);
+
+        profiler.setDataAnalysisEndedListener(new IntrusiveProfiler.DataAnalysisEndedListener() {
+            @Override
+            public void onDataAnalysisEnd() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        showDisplayResultsButton();
+                    }
+                });
+            }
+        });
+
+        profiler.analyzeData();
+    }
+
     private void setupGauges() {
-        gaugeSoundLevel = (SpeedometerGauge) findViewById(R.id.gauge_sound_level);
+        gaugeAudioLevel = (SpeedometerGauge) findViewById(R.id.gauge_audio_level);
 
-        gaugeSoundLevel.setMajorTickStep(10);
+        gaugeAudioLevel.setMajorTickStep(10);
 
-        gaugeSoundLevel.setLabelConverter(new SpeedometerGauge.LabelConverter() {
+        gaugeAudioLevel.setLabelConverter(new SpeedometerGauge.LabelConverter() {
             @Override
             public String getLabelFor(double progress, double maxProgress) {
                 return String.valueOf((int) Math.round(progress));
             }
         });
 
-        gaugeSoundLevel.setUnitsText("dB");
-        gaugeSoundLevel.setMaxSpeed(120);
-        gaugeSoundLevel.addColoredRange(0, 60, Color.GREEN);
-        gaugeSoundLevel.addColoredRange(61, 100, Color.YELLOW);
-        gaugeSoundLevel.addColoredRange(101, 120, Color.RED);
+        gaugeAudioLevel.setUnitsText("dB");
+        gaugeAudioLevel.setMaxSpeed(120);
+        gaugeAudioLevel.addColoredRange(0, 60, Color.GREEN);
+        gaugeAudioLevel.addColoredRange(61, 100, Color.YELLOW);
+        gaugeAudioLevel.addColoredRange(101, 120, Color.RED);
 
         gaugeLightLevel = (SpeedometerGauge) findViewById(R.id.gauge_light_level);
 
@@ -237,7 +263,7 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
     }
 
     private void resetGauges() {
-        gaugeSoundLevel.setSpeed(0);
+        gaugeAudioLevel.setSpeed(0);
         gaugeLightLevel.setSpeed(0);
     }
 
@@ -247,9 +273,10 @@ public class NonIntrusiveProfilingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(NonIntrusiveProfilingActivity.this, NonIntrusiveAssessmentActivity.class);
-//                        intent.putExtra("EXTRA_ROOM_ID", roomId);
+                intent.putExtra("EXTRA_ROOM_ID", uniqueId);
                 startActivity(intent);
             }
         });
+        btnStop.setVisibility(View.VISIBLE);
     }
 }

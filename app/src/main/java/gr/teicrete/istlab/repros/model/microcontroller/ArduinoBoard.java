@@ -12,30 +12,23 @@ public class ArduinoBoard {
     private HashMap<String, Appliance> appliances;
 
 
-    public ArduinoBoard() {
+    //    public ArduinoBoard(HashMap<String, Sensor> sensors, HashMap<String, Appliance> appliances) {
+    public ArduinoBoard(HashMap<String, Appliance> appliances) {
 
-        // TODO: here sensors and appliances are created ad-hoc.
-        // Normally, they would be created according to database
-        // and passed here through setters
-
-        TemperatureSensor temperatureSensor= new TemperatureSensor("temperature_indoors");
-        HumiditySensor humiditySensor = new HumiditySensor("humidity_indoors");
-        CO2Sensor co2Sensor = new CO2Sensor("co2");
-        CTSensor ctSensor = new CTSensor("ct");
-
-        sensors.put(temperatureSensor.getId(), temperatureSensor);
-        sensors.put(humiditySensor.getId(), humiditySensor);
-        sensors.put(co2Sensor.getId(), co2Sensor);
-        sensors.put(ctSensor.getId(), ctSensor);
+//        this.sensors = sensors;
+        this.appliances = appliances;
 
 
-        AirConditioner airConditioner = new AirConditioner("air_conditioner_1", 100, 17, 20000);
-        Lightbulb lightbulb = new Lightbulb("lightbulb_1");
-        Window window = new Window("window_1");
+//        TemperatureSensor temperatureSensor= new TemperatureSensor("temperature_indoors");
+//        HumiditySensor humiditySensor = new HumiditySensor("humidity_indoors");
+//        CO2Sensor co2Sensor = new CO2Sensor("co");
+//        CTSensor ctSensor = new CTSensor("ct");
+//
+//        sensors.put(temperatureSensor.getId(), temperatureSensor);
+//        sensors.put(humiditySensor.getId(), humiditySensor);
+//        sensors.put(co2Sensor.getId(), co2Sensor);
+//        sensors.put(ctSensor.getId(), ctSensor);
 
-        appliances.put(airConditioner.getId(), airConditioner);
-        appliances.put(lightbulb.getId(), lightbulb);
-        appliances.put(window.getId(), window);
     }
 
     public HashMap<String, Sensor> getSensors() {
@@ -53,4 +46,9 @@ public class ArduinoBoard {
     public void setAppliances(HashMap<String, Appliance> appliances) {
         this.appliances = appliances;
     }
+
+    public Appliance getApplianceWithId(String id) {
+        return appliances.get(id);
+    }
+
 }

@@ -1,5 +1,9 @@
 package gr.teicrete.istlab.repros.model.microcontroller;
 
+import android.content.Context;
+
+import gr.teicrete.istlab.repros.model.communication.BluetoothModule;
+
 /**
  * Created by Antonis on 25-Dec-16.
  */
@@ -10,15 +14,16 @@ public abstract class Appliance {
     private String name;
     private boolean enabled;
 
-    public Appliance(String id) {
-        this.id = id;
-        this.name = id;
-        enabled = false;
+    private BluetoothModule bluetoothModule;
+
+    public Appliance(Context context, String id) {
+        this(context, id, id);
     }
 
-    public Appliance(String id, String name) {
+    public Appliance(Context context, String id, String name) {
         this.id = id;
         this.name = name;
+        this.bluetoothModule = new BluetoothModule(context);
     }
 
     public String getId() {
@@ -33,9 +38,9 @@ public abstract class Appliance {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+//    public void setEnabled(boolean enabled) {
+//        this.enabled = enabled;
+//    }
 
     public String getName() {
         return name;
@@ -47,12 +52,14 @@ public abstract class Appliance {
 
     public void turnOn() {
         if (!enabled) {
+            bluetoothModule.sendMessage(id + "_on");
             enabled = true;
         }
     }
 
     public void turnOff() {
         if (enabled) {
+            bluetoothModule.sendMessage(id + "_off");
             enabled = false;
         }
     }

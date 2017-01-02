@@ -2,6 +2,7 @@ package gr.teicrete.istlab.repros.ui;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,21 +12,30 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import gr.teicrete.istlab.repros.R;
+import gr.teicrete.istlab.repros.model.db.DBHandler;
+import gr.teicrete.istlab.repros.model.profiler.DateUtils;
+import gr.teicrete.istlab.repros.model.profiler.NonIntrusiveReadingsSnapshot;
+import gr.teicrete.istlab.repros.ui.charts.ChartItem;
+import gr.teicrete.istlab.repros.ui.charts.LineChartItem;
+import gr.teicrete.istlab.repros.ui.charts.PieChartItem;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
@@ -36,34 +46,26 @@ import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
  * create an instance of this fragment.
  */
 public class NonIntrusiveResultsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String EXTRA_ROOM_ID = "EXTRA_ROOM_ID";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String roomId;
+    private DBHandler dbHandler;
 
 
     public NonIntrusiveResultsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NonIntrusiveResultsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NonIntrusiveResultsFragment newInstance(String param1, String param2) {
+
+    //    public static NonIntrusiveResultsFragment newInstance(long[] timestamps, double[] motion, double[] audio, double[] light) {
+    public static NonIntrusiveResultsFragment newInstance(String roomId) {
         NonIntrusiveResultsFragment fragment = new NonIntrusiveResultsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(EXTRA_ROOM_ID, roomId);
+//        args.putLongArray(EXTRA_TIMESTAMP, timestamps);
+//        args.putDoubleArray(EXTRA_MOTION, motion);
+//        args.putDoubleArray(EXTRA_AUDIO, audio);
+//        args.putDoubleArray(EXTRA_LIGHT, light);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,11 +75,12 @@ public class NonIntrusiveResultsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
 
-            // variables assignments
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+            roomId = getArguments().getString(EXTRA_ROOM_ID);
 
+            dbHandler = new DBHandler(roomId, false);
+
+            Utils.init(getContext());
+        }
     }
 
     @Override
@@ -85,27 +88,70 @@ public class NonIntrusiveResultsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        ListView lv = (ListView) getView().findViewById(R.id.listView1);
+        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String key = (String) dataSnapshot.getValue();
 
-        ArrayList<ChartItem> list = new ArrayList<ChartItem>();
+                dbHandler.getReadingSnapshotsRef(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
 
-        list.add(new PieChartItem(generateDataPie(), getContext()));
+                                final List<Long> timestamps = new ArrayList<>();
+                                final List<Double> motion = new ArrayList<>();
+                                final List<Double> audio = new ArrayList<>();
+                                final List<Double> light = new ArrayList<>();
 
+                                for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-//        // 30 items
-//        for (int i = 0; i < 30; i++) {
-//
-//            if(i % 3 == 0) {
-//                list.add(new LineChartItem(generateDataLine(i + 1), getApplicationContext()));
-//            } else if(i % 3 == 1) {
-//                list.add(new BarChartItem(generateDataBar(i + 1), getApplicationContext()));
-//            } else if(i % 3 == 2) {
-//                list.add(new PieChartItem(generateDataPie(i + 1), getApplicationContext()));
-//            }
-//        }
+                                    NonIntrusiveReadingsSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingsSnapshot.class);
 
-        ChartDataAdapter cda = new ChartDataAdapter(getContext(), list);
-        lv.setAdapter(cda);
+                                    timestamps.add(readingsSnapshot.getTimestamp());
+                                    motion.add(NonIntrusiveReadingsSnapshot.booleanToDouble(readingsSnapshot.isMotionDetected()));
+                                    audio.add(readingsSnapshot.getAudioLevel());
+                                    light.add(readingsSnapshot.getLightLevel());
+                                }
+
+                                ArrayList<ChartItem> list = new ArrayList<>();
+
+                                list.add(new PieChartItem(generateDataPie(), getContext()));
+
+                                IAxisValueFormatter iAxisValueFormatter = new IAxisValueFormatter() {
+                                    @Override
+                                    public String getFormattedValue(float value, AxisBase axis) {
+                                        Long timestamp = timestamps.get((int) value);
+                                        return DateUtils.timestampToDateString(timestamp);
+                                    }
+                                };
+
+                                // motionDetected
+                                list.add(new LineChartItem(generateDataLine("Motion Detection", Color.rgb(255, 0, 0), motion), getContext(), iAxisValueFormatter));
+                                // audioLevel
+                                list.add(new LineChartItem(generateDataLine("Audio Level", Color.rgb(0, 204, 0), audio), getContext(), iAxisValueFormatter));
+                                // lightLevel
+                                list.add(new LineChartItem(generateDataLine("Light Level", Color.rgb(255, 255, 0), light), getContext(), iAxisValueFormatter));
+
+                                ChartDataAdapter cda = new ChartDataAdapter(getContext(), list);
+                                ListView lv = (ListView) getView().findViewById(R.id.listView1);
+                                lv.setAdapter(cda);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     @Override
@@ -153,12 +199,10 @@ public class NonIntrusiveResultsFragment extends Fragment {
 
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
 
-//        entries.add(new PieEntry((float) ((Math.random() * 70) + 30), "Energy Consumption"));
-        entries.add(new PieEntry(20f, "Energy Consumption"));
-//        entries.add(new PieEntry((float) ((Math.random() * 70) + 30), "Normal"));
+        entries.add(new PieEntry(20f, "Suspicious"));
         entries.add(new PieEntry(80f, "Normal"));
 
-        PieDataSet d = new PieDataSet(entries, "");
+        PieDataSet d = new PieDataSet(entries, "Energy Consumption");
 
         // space between slices
         d.setSliceSpace(2f);
@@ -168,6 +212,27 @@ public class NonIntrusiveResultsFragment extends Fragment {
         d.setColors(colors);
 
         PieData cd = new PieData(d);
+        return cd;
+    }
+
+    private LineData generateDataLine(String title, int color, List<Double> data) {
+
+        ArrayList<Entry> e1 = new ArrayList<>();
+
+        for (int i = 0; i < data.size(); i++) {
+            e1.add(new Entry(i, data.get(i).floatValue()));
+        }
+
+        LineDataSet d1 = new LineDataSet(e1, title);
+        d1.setLineWidth(4.0f);
+        d1.setCircleRadius(4.5f);
+        d1.setColor(color);
+        d1.setDrawValues(false);
+
+        ArrayList<ILineDataSet> sets = new ArrayList<>();
+        sets.add(d1);
+
+        LineData cd = new LineData(sets);
         return cd;
     }
 

@@ -42,7 +42,6 @@
         </activity>
         <activity android:name=".ui.TimeDefinitionActivity" />
         <activity android:name=".ui.NonIntrusiveProfilingActivity" />
-        <activity android:name=".ui.ProfilingCompletedActivity" />
         <activity android:name=".ui.InitializationActivity" />
         <activity android:name=".ui.IntrusiveProfilingActivity" />
         <activity

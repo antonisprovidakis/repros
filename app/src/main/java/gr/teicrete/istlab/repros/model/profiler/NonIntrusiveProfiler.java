@@ -2,19 +2,28 @@ package gr.teicrete.istlab.repros.model.profiler;
 
 import android.content.Context;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
+
+import gr.teicrete.istlab.repros.model.db.DBHandler;
 
 /**
  * Created by Antonis on 26-Dec-16.
  */
 
 public class NonIntrusiveProfiler implements Profiler {
+    public final static int DB_PUSHING_DELAY = 5 * 1000;
 
     private boolean profiling;
 
-    private IntrusiveProfiler.DataAnalysisEndedListener dataAnalysisEndedListener = null;
+    private Profiler.DataAnalysisEndedListener dataAnalysisEndedListener = null;
 
     private List<MobileSensor> sensors = new ArrayList<>();
 
@@ -22,13 +31,12 @@ public class NonIntrusiveProfiler implements Profiler {
     private Microphone microphone;
     private Camera camera;
 
-    private Timer timer;
-
-
+    private DBHandler dbHandler;
     private List<String> recommendations = new ArrayList<>();
 
+    private Timer timer;
 
-    public NonIntrusiveProfiler(Context context) {
+    public NonIntrusiveProfiler(Context context, String uniqueId) {
         lightSensor = new LightSensor(context);
         microphone = new Microphone(context);
         camera = new Camera();
@@ -36,15 +44,23 @@ public class NonIntrusiveProfiler implements Profiler {
         sensors.add(microphone);
         sensors.add(camera);
 
+//        String uniqueID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        dbHandler = new DBHandler(uniqueId, false);
+
         timer = new Timer();
     }
 
     @Override
     public void startProfiling() {
         profiling = true;
+        dbHandler.prepareForProfiling();
+
         for (MobileSensor sensor : sensors) {
             sensor.startSensing();
         }
+
+        startPushingReadingsToDB();
     }
 
     @Override
@@ -68,16 +84,80 @@ public class NonIntrusiveProfiler implements Profiler {
     @Override
     public void analyzeData() {
 
+        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String key = (String) dataSnapshot.getValue();
 
+                dbHandler.getReadingSnapshotsRef(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
 
-        // TODO: uncomment below when analysis finished
-        // fire event
-//        if (dataAnalysisEndedListener != null) {
-//            dataAnalysisEndedListener.onDataAnalysisEnd();
-//        }
+                            /*
+                            for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
+
+                                NonIntrusiveReadingsSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingsSnapshot.class);
+
+                                boolean motionDetected = readingsSnapshot.isMotionDetected();
+                                double lightLevel = readingsSnapshot.getLightLevel();
+                                double audioLevel = readingsSnapshot.getAudioLevel();
+
+                                // TODO: some algorithm runs here in order to generate recommendations
+                            }
+                            */
+
+                                List<String> recommendations = Arrays.asList(new String[]{RecommendationsSet.NON_INTRUSIVE_NO_MOTION_LIGHT, RecommendationsSet.NON_INTRUSIVE_NO_MOTION_AUDIO});
+
+                                dbHandler.pushRecommendations(recommendations);
+
+                                // fire event
+                                if (dataAnalysisEndedListener != null) {
+                                    dataAnalysisEndedListener.onDataAnalysisEnd();
+                                }
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
     }
+
+    private void startPushingReadingsToDB() {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                pushReadingsSnapshot();
+            }
+        };
+
+        timer.scheduleAtFixedRate(task, 0, DB_PUSHING_DELAY);
+    }
+
+    private void pushReadingsSnapshot() {
+        long timestamp = System.currentTimeMillis();
+        boolean motionDetected = camera.isMotionDetected();
+        double lightLevel = lightSensor.getLightLevel();
+        double audioLevel = microphone.getAudioLevel();
+
+        NonIntrusiveReadingsSnapshot readingsSnapshot = new NonIntrusiveReadingsSnapshot(timestamp, motionDetected, lightLevel, audioLevel);
+
+        dbHandler.pushNewNonIntrusiveReadingSnapshot(readingsSnapshot);
+    }
+
 
     public LightSensor getLightSensor() {
         return lightSensor;
@@ -95,11 +175,7 @@ public class NonIntrusiveProfiler implements Profiler {
         return recommendations;
     }
 
-    public void setDataAnalysisEndedListener(IntrusiveProfiler.DataAnalysisEndedListener dataAnalysisEndedListener) {
+    public void setDataAnalysisEndedListener(Profiler.DataAnalysisEndedListener dataAnalysisEndedListener) {
         this.dataAnalysisEndedListener = dataAnalysisEndedListener;
-    }
-
-    public static interface DataAnalysisEndedListener {
-        public void onDataAnalysisEnd();
     }
 }
