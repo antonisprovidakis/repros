@@ -16,7 +16,6 @@ import org.sensingkit.sensingkitlib.data.SKSensorData;
 
 public class Microphone implements MobileSensor {
 
-
     private SensingKitLibInterface mSensingKitLib = null;
     private SKSensorDataListener skSensorDataListener = null;
 

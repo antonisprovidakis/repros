@@ -55,9 +55,6 @@ public class IntrusiveProfiler implements Profiler {
 
     private Timer timer;
 
-
-    private List<String> recommendations = new ArrayList<>();
-
     public IntrusiveProfiler(Context context, String roomId, RoomProfile roomProfile) {
         this.roomProfile = roomProfile;
 
@@ -145,7 +142,7 @@ public class IntrusiveProfiler implements Profiler {
                             /*
                             for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-                                IntrusiveReadingsSnapshot intrusiveReadingsSnapshot = readingDataSnapshot.getValue(IntrusiveReadingsSnapshot.class);
+                                IntrusiveReadingSnapshot intrusiveReadingsSnapshot = readingDataSnapshot.getValue(IntrusiveReadingSnapshot.class);
 
                                 long timestamp = intrusiveReadingsSnapshot.getTimestamp();
                                 double temperatureIndoors = intrusiveReadingsSnapshot.getTemperatureIndoors();
@@ -246,14 +243,14 @@ public class IntrusiveProfiler implements Profiler {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                pushReadingsSnapshot();
+                dbHandler.pushNewIntrusiveReadingSnapshot(takeSnapshot());
             }
         };
 
         timer.scheduleAtFixedRate(task, 0, DB_PUSHING_DELAY);
     }
 
-    private void pushReadingsSnapshot() {
+    private IntrusiveReadingSnapshot takeSnapshot() {
         long timestamp = System.currentTimeMillis();
         double temperatureIndoors = arduinoData.getTemperature();
         double temperatureOutdoors = weatherData.getTemperature();
@@ -264,10 +261,10 @@ public class IntrusiveProfiler implements Profiler {
         double co = arduinoData.getCO();
         double totalEnergyConsumption = arduinoData.getEnergyConsumption();
 
-        IntrusiveReadingsSnapshot intrusiveReadingsSnapshot = new IntrusiveReadingsSnapshot(timestamp, temperatureIndoors, temperatureOutdoors,
+        IntrusiveReadingSnapshot intrusiveReadingSnapshot = new IntrusiveReadingSnapshot(timestamp, temperatureIndoors, temperatureOutdoors,
                 humidityIndoors, humidityOutdoors, lightLevel, audioLevel, co, totalEnergyConsumption);
 
-        dbHandler.pushNewIntrusiveReadingSnapshot(intrusiveReadingsSnapshot);
+        return intrusiveReadingSnapshot;
     }
 
     public LightSensor getLightSensor() {
@@ -284,10 +281,6 @@ public class IntrusiveProfiler implements Profiler {
 
     public ArduinoData getArduinoData() {
         return arduinoData;
-    }
-
-    public List<String> getRecommendations() {
-        return recommendations;
     }
 
     public void setWeatherDataReceivedListener(WeatherDataReceivedListener weatherDataReceivedListener) {

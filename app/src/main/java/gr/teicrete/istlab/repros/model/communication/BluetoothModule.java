@@ -61,12 +61,6 @@ public class BluetoothModule extends CommunicationModule {
         bt.send(message, false);
     }
 
-//    public static class BluetoothNotEnabledException extends Exception {
-//        public BluetoothNotEnabledException(String message) {
-//            super(message);
-//        }
-//    }
-
     public void setDataReceivedListener(BluetoothSPP.OnDataReceivedListener onDataReceivedListener){
         bt.setOnDataReceivedListener(onDataReceivedListener);
     }

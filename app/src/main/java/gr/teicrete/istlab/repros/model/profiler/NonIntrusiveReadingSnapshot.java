@@ -4,17 +4,17 @@ package gr.teicrete.istlab.repros.model.profiler;
  * Created by Antonis on 30-Dec-16.
  */
 
-public class NonIntrusiveReadingsSnapshot {
+public class NonIntrusiveReadingSnapshot {
 
     private long timestamp;
     private boolean motionDetected;
     private double lightLevel;
     private double audioLevel;
 
-    public NonIntrusiveReadingsSnapshot() {
+    public NonIntrusiveReadingSnapshot() {
     }
 
-    public NonIntrusiveReadingsSnapshot(long timestamp, boolean motionDetected, double lightLevel, double audioLevel) {
+    public NonIntrusiveReadingSnapshot(long timestamp, boolean motionDetected, double lightLevel, double audioLevel) {
         this.timestamp = timestamp;
         this.motionDetected = motionDetected;
         this.lightLevel = lightLevel;

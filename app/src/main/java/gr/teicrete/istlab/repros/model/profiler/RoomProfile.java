@@ -80,51 +80,6 @@ public class RoomProfile implements Serializable {
         return roomName + " " + country + " " + city + " " + buildingName + " " + latitude + " " + longitude + " " + sqMeters + " " + accessPointInfo +
                 " " + installedAppliances + " " + installedSensors;
     }
-    
-    //    public OptimalRange getOptimumTemperature() {
-//        return optimumTemperature;
-//    }
-//
-//    public void setOptimalTemperature(OptimalRange optimumTemperature) {
-//        this.optimumTemperature = optimumTemperature;
-//    }
-//
-//    public OptimalRange getOptimumHumidity() {
-//        return optimumHumidity;
-//    }
-//
-//    public void setOptimalHumidity(OptimalRange optimumHumidity) {
-//        this.optimumHumidity = optimumHumidity;
-//    }
-
-
-//    public static class OptimalRange<T extends Number> {
-//
-//        private T min;
-//        private T max;
-//
-//        public OptimalRange(T min, T max) {
-//            this.min = min;
-//            this.max = max;
-//        }
-//
-//        public T min() {
-//            return min;
-//        }
-//
-//
-//        public T max() {
-//            return max;
-//        }
-//
-//        public boolean isInRange(Integer value) {
-//            return min.intValue() <= value && value <= max.intValue();
-//        }
-//
-//        public boolean isInRange(Double value) {
-//            return min.doubleValue() <= value && value <= max.doubleValue();
-//        }
-//    }
 
     public static boolean isInRange(Map<String, Double> map, Double value) {
         return map.get("min") <= value && value <= map.get("max");

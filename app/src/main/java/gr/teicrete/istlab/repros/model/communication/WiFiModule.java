@@ -10,8 +10,6 @@ import android.net.wifi.WifiManager;
 
 public class WiFiModule extends CommunicationModule {
 
-//    private String currentConnectedAccessPoint;
-
     private WifiManager wifiManager;
 
     public WiFiModule(Context context) {
@@ -39,10 +37,6 @@ public class WiFiModule extends CommunicationModule {
     }
 
     public boolean connectToAccessPoint(String ssid, String password) {
-
-//        String ssid1 = "OTEc62cc8";
-//        String password1 = "1C8c1418";
-
         WifiConfiguration wifiConfiguration = new WifiConfiguration();
         String properSSID = String.format("\"%s\"", ssid);
         wifiConfiguration.SSID = properSSID;

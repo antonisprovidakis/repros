@@ -32,7 +32,7 @@ import java.util.List;
 import gr.teicrete.istlab.repros.R;
 import gr.teicrete.istlab.repros.model.db.DBHandler;
 import gr.teicrete.istlab.repros.model.profiler.DateUtils;
-import gr.teicrete.istlab.repros.model.profiler.NonIntrusiveReadingsSnapshot;
+import gr.teicrete.istlab.repros.model.profiler.NonIntrusiveReadingSnapshot;
 import gr.teicrete.istlab.repros.ui.charts.ChartItem;
 import gr.teicrete.istlab.repros.ui.charts.LineChartItem;
 import gr.teicrete.istlab.repros.ui.charts.PieChartItem;
@@ -107,10 +107,10 @@ public class NonIntrusiveResultsFragment extends Fragment {
 
                                 for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-                                    NonIntrusiveReadingsSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingsSnapshot.class);
+                                    NonIntrusiveReadingSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingSnapshot.class);
 
                                     timestamps.add(readingsSnapshot.getTimestamp());
-                                    motion.add(NonIntrusiveReadingsSnapshot.booleanToDouble(readingsSnapshot.isMotionDetected()));
+                                    motion.add(NonIntrusiveReadingSnapshot.booleanToDouble(readingsSnapshot.isMotionDetected()));
                                     audio.add(readingsSnapshot.getAudioLevel());
                                     light.add(readingsSnapshot.getLightLevel());
                                 }

@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Camera implements MobileSensor {
 
-    public static int PICTURE_DELAY = 200; // ms
+//    public static int PICTURE_DELAY = 200; // ms
 
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
@@ -27,36 +27,8 @@ public class Camera implements MobileSensor {
 
     private boolean motionDetected;
 
-
     public Camera() {
-//        this.preview = preview;
-//        previewHolder = preview.getHolder();
-//        previewHolder.addCallback(surfaceCallback);
-//        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         detector = new RgbMotionDetection();
-
-//        detector.setMotionStateChangeListener(new MotionStateChangeListener() {
-//            @Override
-//            public void onMotionStateChange(final boolean motion) {
-//
-//                motionDetected = motion; // update internal state
-//                System.out.println(motionDetected);
-//
-////                runOnUiThread(new Runnable() {
-////                    @Override
-////                    public void run() {
-////                        System.out.println("State: " + motion);
-////                        if (motion) {
-////                            tv.setText("Motion");
-////                        } else {
-////                            tv.setText("No Motion");
-////                        }
-////
-////                    }
-////                });
-//            }
-//        });
-
     }
 
     // This method MUST be called before start sensing motion
@@ -70,7 +42,7 @@ public class Camera implements MobileSensor {
     public boolean isMotionDetected() {
         return motionDetected;
     }
-    
+
     @Override
     public void startSensing() {
         camera = android.hardware.Camera.open();
@@ -103,10 +75,8 @@ public class Camera implements MobileSensor {
             android.hardware.Camera.Size size = cam.getParameters().getPreviewSize();
             if (size == null) return;
 
-//            if (!GlobalData.isPhoneInMotion()) {
             DetectionThread thread = new DetectionThread(data, size.width, size.height);
             thread.start();
-//            }
         }
     };
 
@@ -134,7 +104,6 @@ public class Camera implements MobileSensor {
             android.hardware.Camera.Size size = getBestPreviewSize(width, height, parameters);
             if (size != null) {
                 parameters.setPreviewSize(size.width, size.height);
-//                Log.d(TAG, "Using width=" + size.width + " height=" + size.height);
             }
             camera.setParameters(parameters);
             camera.startPreview();
@@ -146,7 +115,6 @@ public class Camera implements MobileSensor {
          */
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            // Ignore
         }
     };
 
@@ -188,86 +156,18 @@ public class Camera implements MobileSensor {
         public void run() {
             if (!processing.compareAndSet(false, true)) return;
 
-            // Log.d(TAG, "BEGIN PROCESSING...");
             try {
-                // Previous frame
-//                int[] pre = null;
-//                if (Preferences.SAVE_PREVIOUS) pre = detector.getPrevious();
-
-                // Current frame (with changes)
-                // long bConversion = System.currentTimeMillis();
                 int[] img = null;
-//                if (Preferences.USE_RGB) {
                 img = ImageProcessing.decodeYUV420SPtoRGB(data, width, height);
-//                } else {
-//                    img = ImageProcessing.decodeYUV420SPtoLuma(data, width, height);
-//                }
-
-                // long aConversion = System.currentTimeMillis();
-                // Log.d(TAG, "Converstion="+(aConversion-bConversion));
-
-                // Current frame (without changes)
-//                int[] org = null;
-//                if (Preferences.SAVE_ORIGINAL && img != null) org = img.clone();
-
                 if (img != null) {
-//                    motionDetected = detector.detect(img, width, height);
                     motionDetected = detector.detect(img, width, height);
                 }
-
-//                if (img != null && detector.detect(img, width, height)) {
-//
-//                    // The delay is necessary to avoid taking a picture while in
-//                    // the
-//                    // middle of taking another. This problem can causes some
-//                    // phones
-//                    // to reboot.
-//                    long now = System.currentTimeMillis();
-//                    if (now > (mReferenceTime + Preferences.PICTURE_DELAY)) {
-//                        mReferenceTime = now;
-//
-//                        Bitmap previous = null;
-//                        if (Preferences.SAVE_PREVIOUS && pre != null) {
-//                            if (Preferences.USE_RGB)
-//                                previous = ImageProcessing.rgbToBitmap(pre, width, height);
-//                            else previous = ImageProcessing.lumaToGreyscale(pre, width, height);
-//                        }
-//
-//                        Bitmap original = null;
-//                        if (Preferences.SAVE_ORIGINAL && org != null) {
-//                            if (Preferences.USE_RGB)
-//                                original = ImageProcessing.rgbToBitmap(org, width, height);
-//                            else original = ImageProcessing.lumaToGreyscale(org, width, height);
-//                        }
-//
-//                        Bitmap bitmap = null;
-//                        if (Preferences.SAVE_CHANGES) {
-//                            if (Preferences.USE_RGB)
-//                                bitmap = ImageProcessing.rgbToBitmap(img, width, height);
-//                            else bitmap = ImageProcessing.lumaToGreyscale(img, width, height);
-//                        }
-//
-////                        Log.i(TAG, "Saving.. previous=" + previous + " original=" + original + " bitmap=" + bitmap);
-//                        Looper.prepare();
-////                        new SavePhotoTask().execute(previous, original, bitmap);
-//                    } else {
-//                        Log.i(TAG, "Not taking picture because not enough time has passed since the creation of the Surface");
-//                    }
-//                }
-
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 processing.set(false);
             }
-            // Log.d(TAG, "END PROCESSING...");
-
             processing.set(false);
         }
     }
-
-//    public void setMotionStateChangeListener(MotionStateChangeListener motionStateChangeListener) {
-//        detector.setMotionStateChangeListener(motionStateChangeListener);
-//    }
-
 }

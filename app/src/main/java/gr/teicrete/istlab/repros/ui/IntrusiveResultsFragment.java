@@ -32,7 +32,7 @@ import java.util.List;
 import gr.teicrete.istlab.repros.R;
 import gr.teicrete.istlab.repros.model.db.DBHandler;
 import gr.teicrete.istlab.repros.model.profiler.DateUtils;
-import gr.teicrete.istlab.repros.model.profiler.IntrusiveReadingsSnapshot;
+import gr.teicrete.istlab.repros.model.profiler.IntrusiveReadingSnapshot;
 import gr.teicrete.istlab.repros.ui.charts.ChartItem;
 import gr.teicrete.istlab.repros.ui.charts.LineChartItem;
 import gr.teicrete.istlab.repros.ui.charts.PieChartItem;
@@ -105,7 +105,7 @@ public class IntrusiveResultsFragment extends Fragment {
 
                                 for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-                                    IntrusiveReadingsSnapshot readingsSnapshot = readingDataSnapshot.getValue(IntrusiveReadingsSnapshot.class);
+                                    IntrusiveReadingSnapshot readingsSnapshot = readingDataSnapshot.getValue(IntrusiveReadingSnapshot.class);
 
                                     timestamps.add(readingsSnapshot.getTimestamp());
                                     temperatureIndoors.add(readingsSnapshot.getTemperatureIndoors());

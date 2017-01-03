@@ -100,7 +100,7 @@ public class NonIntrusiveProfiler implements Profiler {
                             /*
                             for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-                                NonIntrusiveReadingsSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingsSnapshot.class);
+                                NonIntrusiveReadingSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingSnapshot.class);
 
                                 boolean motionDetected = readingsSnapshot.isMotionDetected();
                                 double lightLevel = readingsSnapshot.getLightLevel();
@@ -140,22 +140,22 @@ public class NonIntrusiveProfiler implements Profiler {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                pushReadingsSnapshot();
+                dbHandler.pushNewNonIntrusiveReadingSnapshot(takeSnapshot());
             }
         };
 
         timer.scheduleAtFixedRate(task, 0, DB_PUSHING_DELAY);
     }
 
-    private void pushReadingsSnapshot() {
+    private NonIntrusiveReadingSnapshot takeSnapshot() {
         long timestamp = System.currentTimeMillis();
         boolean motionDetected = camera.isMotionDetected();
         double lightLevel = lightSensor.getLightLevel();
         double audioLevel = microphone.getAudioLevel();
 
-        NonIntrusiveReadingsSnapshot readingsSnapshot = new NonIntrusiveReadingsSnapshot(timestamp, motionDetected, lightLevel, audioLevel);
+        NonIntrusiveReadingSnapshot readingSnapshot = new NonIntrusiveReadingSnapshot(timestamp, motionDetected, lightLevel, audioLevel);
 
-        dbHandler.pushNewNonIntrusiveReadingSnapshot(readingsSnapshot);
+        return readingSnapshot;
     }
 
 

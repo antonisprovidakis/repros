@@ -38,10 +38,6 @@ public abstract class Appliance {
         return enabled;
     }
 
-//    public void setEnabled(boolean enabled) {
-//        this.enabled = enabled;
-//    }
-
     public String getName() {
         return name;
     }

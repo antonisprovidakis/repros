@@ -15,14 +15,6 @@ public class WeatherService {
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
-//    public static void get(String url, AsyncHttpResponseHandler responseHandler) {
-//        client.get(getAbsoluteUrl(url), null, responseHandler);
-//    }
-
-//    public static void post(String url, AsyncHttpResponseHandler responseHandler) {
-//        client.post(getAbsoluteUrl(url), null, responseHandler);
-//    }
-
     public static void fetchWeatherData(String url, AsyncHttpResponseHandler responseHandler) {
         client.post(getAbsoluteUrl(url), null, responseHandler);
     }

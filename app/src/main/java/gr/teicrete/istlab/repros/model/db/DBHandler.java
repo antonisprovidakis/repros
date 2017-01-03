@@ -7,8 +7,8 @@ import com.google.firebase.database.Query;
 import java.util.HashMap;
 import java.util.List;
 
-import gr.teicrete.istlab.repros.model.profiler.NonIntrusiveReadingsSnapshot;
-import gr.teicrete.istlab.repros.model.profiler.IntrusiveReadingsSnapshot;
+import gr.teicrete.istlab.repros.model.profiler.NonIntrusiveReadingSnapshot;
+import gr.teicrete.istlab.repros.model.profiler.IntrusiveReadingSnapshot;
 
 /**
  * Created by Antonis on 26-Dec-16.
@@ -17,9 +17,8 @@ import gr.teicrete.istlab.repros.model.profiler.IntrusiveReadingsSnapshot;
 public class DBHandler {
 
     private DatabaseReference rootRef = null;
-
-    private DatabaseReference readingSnapshotsRef = null;
     private DatabaseReference roomRef = null;
+    private DatabaseReference readingSnapshotsRef = null;
     private DatabaseReference recommendationsRef = null;
 
     private String roomId = null;
@@ -50,9 +49,6 @@ public class DBHandler {
             readingsRoomRef = rootRef.child("readings").child(roomId);
         } else {
             readingsRoomRef = rootRef.child("readings").child("temp").child(roomId);
-//            readingsRoomRef.setValue(newRoomReadingMap);
-//            readingSnapshotsRef = readingsRoomRef.child("snapshots");
-//            recommendationsRef = readingsRoomRef.child("recommendations");
         }
         newRoomReading = readingsRoomRef.push();
         newRoomReading.setValue(newRoomReadingMap);
@@ -86,20 +82,6 @@ public class DBHandler {
 
         return lastReadingQuery;
     }
-
-//    public void prepareForFetchingData(String lastReadingKey) {
-//
-//        DatabaseReference readingsRoomRef;
-//
-//        if (intrusiveProfiling) {
-//            readingsRoomRef = rootRef.child("readings").child(roomId).child(lastReadingKey);
-//        } else {
-//            readingsRoomRef = rootRef.child("readings").child("temp").child(roomId).child(lastReadingKey);
-//        }
-//
-//        readingSnapshotsRef = readingsRoomRef.child("snapshots");
-//        recommendationsRef = readingsRoomRef.child("recommendations");
-//    }
 
     public void removeTemporaryReadingsSnapshots() {
         if (!intrusiveProfiling) {
@@ -139,13 +121,13 @@ public class DBHandler {
         return ref;
     }
 
-    public void pushNewIntrusiveReadingSnapshot(IntrusiveReadingsSnapshot intrusiveReadingSnapshot) {
+    public void pushNewIntrusiveReadingSnapshot(IntrusiveReadingSnapshot intrusiveReadingSnapshot) {
         if (readingSnapshotsRef != null) {
             readingSnapshotsRef.push().setValue(intrusiveReadingSnapshot);
         }
     }
 
-    public void pushNewNonIntrusiveReadingSnapshot(NonIntrusiveReadingsSnapshot nonIntrusiveReadingSnapshot) {
+    public void pushNewNonIntrusiveReadingSnapshot(NonIntrusiveReadingSnapshot nonIntrusiveReadingSnapshot) {
         if (readingSnapshotsRef != null) {
             readingSnapshotsRef.push().setValue(nonIntrusiveReadingSnapshot);
         }
