@@ -88,7 +88,7 @@ public class NonIntrusiveResultsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+        dbHandler.getLastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final String key = (String) dataSnapshot.getValue();

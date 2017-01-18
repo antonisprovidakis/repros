@@ -84,7 +84,7 @@ public class NonIntrusiveProfiler implements Profiler {
     @Override
     public void analyzeData() {
 
-        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+        dbHandler.getLastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final String key = (String) dataSnapshot.getValue();
@@ -97,21 +97,20 @@ public class NonIntrusiveProfiler implements Profiler {
                             @Override
                             public void run() {
 
-                            /*
-                            for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
+                                /*
+                                for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-                                NonIntrusiveReadingSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingSnapshot.class);
+                                    NonIntrusiveReadingSnapshot readingsSnapshot = readingDataSnapshot.getValue(NonIntrusiveReadingSnapshot.class);
 
-                                boolean motionDetected = readingsSnapshot.isMotionDetected();
-                                double lightLevel = readingsSnapshot.getLightLevel();
-                                double audioLevel = readingsSnapshot.getAudioLevel();
+                                    boolean motionDetected = readingsSnapshot.isMotionDetected();
+                                    double lightLevel = readingsSnapshot.getLightLevel();
+                                    double audioLevel = readingsSnapshot.getAudioLevel();
 
-                                // TODO: some algorithm runs here in order to generate recommendations
-                            }
-                            */
+                                    // TODO: some algorithm runs here in order to generate recommendations
+                                }
+                                */
 
                                 List<String> recommendations = Arrays.asList(new String[]{RecommendationsSet.NON_INTRUSIVE_NO_MOTION_LIGHT, RecommendationsSet.NON_INTRUSIVE_NO_MOTION_AUDIO});
-
                                 dbHandler.pushRecommendations(recommendations);
 
                                 // fire event
@@ -126,7 +125,6 @@ public class NonIntrusiveProfiler implements Profiler {
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
-
             }
 
             @Override
@@ -153,9 +151,7 @@ public class NonIntrusiveProfiler implements Profiler {
         double lightLevel = lightSensor.getLightLevel();
         double audioLevel = microphone.getAudioLevel();
 
-        NonIntrusiveReadingSnapshot readingSnapshot = new NonIntrusiveReadingSnapshot(timestamp, motionDetected, lightLevel, audioLevel);
-
-        return readingSnapshot;
+        return new NonIntrusiveReadingSnapshot(timestamp, motionDetected, lightLevel, audioLevel);
     }
 
 

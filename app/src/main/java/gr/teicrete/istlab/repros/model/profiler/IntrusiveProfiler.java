@@ -126,7 +126,7 @@ public class IntrusiveProfiler implements Profiler {
     @Override
     public void analyzeData() {
 
-        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+        dbHandler.getLastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final String key = (String) dataSnapshot.getValue();
@@ -134,30 +134,28 @@ public class IntrusiveProfiler implements Profiler {
                 dbHandler.getReadingSnapshotsRef(key).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-//
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
 
-                            /*
-                            for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
+                                /*
+                                for (DataSnapshot readingDataSnapshot : dataSnapshot.getChildren()) {
 
-                                IntrusiveReadingSnapshot intrusiveReadingsSnapshot = readingDataSnapshot.getValue(IntrusiveReadingSnapshot.class);
+                                    IntrusiveReadingSnapshot intrusiveReadingsSnapshot = readingDataSnapshot.getValue(IntrusiveReadingSnapshot.class);
 
-                                long timestamp = intrusiveReadingsSnapshot.getTimestamp();
-                                double temperatureIndoors = intrusiveReadingsSnapshot.getTemperatureIndoors();
-                                double temperatureOutdoors = intrusiveReadingsSnapshot.getTemperatureOutdoors();
-                                double humidityIndoors = intrusiveReadingsSnapshot.getHumidityIndoors();
-                                double humidityOutdoors = intrusiveReadingsSnapshot.getHumidityOutdoors();
-                                double lightLevel = intrusiveReadingsSnapshot.getLightLevel();
-                                double audioLevel = intrusiveReadingsSnapshot.getAudioLevel();
-                                double co = intrusiveReadingsSnapshot.getCO();
-                                double totalEnergyConsumption = intrusiveReadingsSnapshot.getTotalEnergyConsumption();
+                                    long timestamp = intrusiveReadingsSnapshot.getTimestamp();
+                                    double temperatureIndoors = intrusiveReadingsSnapshot.getTemperatureIndoors();
+                                    double temperatureOutdoors = intrusiveReadingsSnapshot.getTemperatureOutdoors();
+                                    double humidityIndoors = intrusiveReadingsSnapshot.getHumidityIndoors();
+                                    double humidityOutdoors = intrusiveReadingsSnapshot.getHumidityOutdoors();
+                                    double lightLevel = intrusiveReadingsSnapshot.getLightLevel();
+                                    double audioLevel = intrusiveReadingsSnapshot.getAudioLevel();
+                                    double co = intrusiveReadingsSnapshot.getCO();
+                                    double totalEnergyConsumption = intrusiveReadingsSnapshot.getTotalEnergyConsumption();
 
-
-                                // TODO: some algorithm runs here in order to generate recommendations
-                            }
-                            */
+                                    // TODO: some algorithm runs here in order to generate recommendations
+                                }
+                                */
 
                                 List<String> recommendations = Arrays.asList(new String[]{RecommendationsSet.INTRUSIVE_CO});
 
@@ -169,21 +167,18 @@ public class IntrusiveProfiler implements Profiler {
                                 }
                             }
                         }).start();
-
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
     }
 
     public void askForArduinoData() {

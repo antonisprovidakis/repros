@@ -7,18 +7,14 @@ import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import gr.teicrete.istlab.repros.R;
 import gr.teicrete.istlab.repros.model.db.DBHandler;
-import gr.teicrete.istlab.repros.model.profiler.RecommendationsSet;
 
 
 /**
@@ -65,7 +61,7 @@ public class RecommendationsFragment extends ListFragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        dbHandler.getlastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
+        dbHandler.getLastReadingKeyRef().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final String key = (String) dataSnapshot.getValue();

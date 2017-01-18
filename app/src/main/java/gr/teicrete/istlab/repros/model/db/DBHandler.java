@@ -70,7 +70,7 @@ public class DBHandler {
         }
     }
 
-    public Query getlastReadingKeyRef() {
+    public Query getLastReadingKeyRef() {
 
         Query lastReadingQuery;
 
@@ -139,3 +139,5 @@ public class DBHandler {
         }
     }
 }
+
+
