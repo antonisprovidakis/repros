@@ -9,7 +9,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 public class WeatherService {
 
-    private static final String API_KEY = "40871f63e6884ee687a125948161111";
+    private static final String API_KEY = "your_apixu_api_key";
 
     private static final String BASE_URL = "http://api.apixu.com/v1/current.json?key=" + API_KEY + "&q=";
 
