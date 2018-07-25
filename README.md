@@ -1,7 +1,7 @@
 # repros
 Repros is the final project for the course "Advanced Software Engineering", in the context of my MSc. degree.
 It's a Room Energy Profiling System (Android app + Arduino + 3rd-party weather services) with monitoring and
-intervention capabilities. Note: the "intervention" is not fully functional, but stands for a concept.
+intervention capabilities. Note: the "intervention" is not fully functional, **but stands for a concept**.
 The app collects environmental metrics from:
   a) smart-device's embedded sensors,
   b) Arduino microcontroller installed in a room and
