@@ -8,3 +8,12 @@ The app collects environmental metrics from:
   c) 3rd-party weather service, and monitors the Energy Profile of the room.
 In addition, the app can control (intervene) electrical appliances, if necessary.
 For more info see "documentation" folder
+
+## Third-party libraries
+Repros make of of the following libraries:
+
+  * SensingKit-Android, under GNU LGPL v3.0 [GitHub Repo](https://github.com/SensingKit/SensingKit-Android) 
+
+  * AndroidWidgets [GitHub Repo](https://github.com/ntoskrnl/AndroidWidgets) 
+
+  * android-motion-detection, under Apache License 2.0 - [GitHub Repo](https://github.com/phishman3579/android-motion-detection) 
