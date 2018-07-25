@@ -12,8 +12,8 @@ For more info see "documentation" folder
 ## Third-party libraries
 Repros make of of the following libraries:
 
-  * SensingKit-Android, under GNU LGPL v3.0 [GitHub Repo](https://github.com/SensingKit/SensingKit-Android) 
+  * [SensingKit-Android](https://github.com/SensingKit/SensingKit-Android), under GNU LGPL v3.0 
 
-  * AndroidWidgets [GitHub Repo](https://github.com/ntoskrnl/AndroidWidgets) 
+  * [AndroidWidgets](https://github.com/ntoskrnl/AndroidWidgets) 
 
-  * android-motion-detection, under Apache License 2.0 - [GitHub Repo](https://github.com/phishman3579/android-motion-detection) 
+  * [android-motion-detection](https://github.com/phishman3579/android-motion-detection), under Apache License 2.0 
