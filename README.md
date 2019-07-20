@@ -10,7 +10,7 @@ In addition, the app can control (intervene) electrical appliances, if necessary
 For more info see "documentation" folder
 
 ## Third-party libraries
-Repros make of of the following libraries:
+Repros make use of the following libraries:
 
   * [SensingKit-Android](https://github.com/SensingKit/SensingKit-Android), under GNU LGPL v3.0 
 
