@@ -7,6 +7,7 @@ The app collects environmental metrics from:
   b) Arduino microcontroller installed in a room and
   c) 3rd-party weather service, and monitors the Energy Profile of the room.
 In addition, the app can control (intervene) electrical appliances, if necessary.
+
 For more info see [documentation](./documentation) folder
 
 ## Third-party libraries
