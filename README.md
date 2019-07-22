@@ -52,7 +52,7 @@ For more info see [documentation](./documentation) folder
 </p>
 
 ## Third-party Libraries
-Repros make use of the following libraries:
+rePROs make use of the following libraries:
 
   * [SensingKit-Android](https://github.com/SensingKit/SensingKit-Android), under GNU LGPL v3.0 
 
