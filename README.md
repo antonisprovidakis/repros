@@ -40,10 +40,9 @@ For more info see [documentation](./documentation) folder
 
 ![intrusive scanning of qr code](https://user-images.githubusercontent.com/15313363/61644336-29ac7b00-acad-11e9-8a03-1feb763e03c8.png)
 
-![intrusive scan encoded json](https://user-images.githubusercontent.com/15313363/61644337-29ac7b00-acad-11e9-80a7-34cf6081ba8b.png)
-
 <p align="center">
-	<img alt="intrusive room info 1" src="https://user-images.githubusercontent.com/15313363/61644338-29ac7b00-acad-11e9-9973-dc4953d81598.png" />
+    <img alt="intrusive scan encoded json" src="https://user-images.githubusercontent.com/15313363/61644337-29ac7b00-acad-11e9-80a7-34cf6081ba8b.png" />
+  <img alt="intrusive room info 1" src="https://user-images.githubusercontent.com/15313363/61644338-29ac7b00-acad-11e9-9973-dc4953d81598.png" />
   <img alt="intrusive room info 2" src="https://user-images.githubusercontent.com/15313363/61644339-2a451180-acad-11e9-82b8-e90a701f23b1.png" />
   <img alt="intrusive profiling 1" src="https://user-images.githubusercontent.com/15313363/61644340-2a451180-acad-11e9-9d89-e8fc6a1a2e98.png" />
   <img alt="intrusive profiling 2" src="https://user-images.githubusercontent.com/15313363/61644342-2b763e80-acad-11e9-950c-7f8309d4efed.png" />
