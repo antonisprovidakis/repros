@@ -5,12 +5,17 @@
 ## About
 rePROs is the final project for the course "Advanced Software Engineering", in the context of my MSc. degree.
 It's a Room Energy Profiling System (Android app + Arduino + 3rd-party weather services) with monitoring and
-intervention capabilities. Note: the "intervention" part is not fully functional, **but stands for a concept**.
+intervention capabilities.
+
 The app collects environmental metrics from:
   a) smart-device's embedded sensors,
   b) Arduino microcontroller installed in a room and
   c) 3rd-party weather service, and monitors the Energy Profile of the room.
 In addition, the app can control (intervene) electrical appliances, if necessary.
+
+**Note**: the "intervention" part is not fully functional, **but stands for a concept**.
+
+For more info see [documentation](./documentation) folder
 
 ### Non-Intrusive Profiling - System Architecture
 ![non-intrusive profiling](https://user-images.githubusercontent.com/15313363/61643590-e271ba80-acab-11e9-8cda-c5b569976046.png)
@@ -18,9 +23,8 @@ In addition, the app can control (intervene) electrical appliances, if necessary
 ### Intrusive Profiling - System Architecture
 ![intrusive profiling](https://user-images.githubusercontent.com/15313363/61644211-f538bf00-acac-11e9-8c63-879d691fcb9b.png)
 
-For more info see [documentation](./documentation) folder
 
-## Screenshots
+## UI Screenshots
 
 ### Non-Intrusive Profiling
 ![non-intrusive timeframe definition](https://user-images.githubusercontent.com/15313363/61644381-3630d380-acad-11e9-9293-34e6f68c48b6.png)
