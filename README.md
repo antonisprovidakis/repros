@@ -15,7 +15,7 @@ In addition, the app can control (intervene) electrical appliances, if necessary
 
 **Note**: the "intervention" part is not fully functional, **but stands for a concept**.
 
-For more info see [documentation](./documentation) folder
+For more info see [documentation](./documentation) folder.
 
 ### Non-Intrusive Profiling - System Architecture
 ![non-intrusive profiling](https://user-images.githubusercontent.com/15313363/61643590-e271ba80-acab-11e9-8cda-c5b569976046.png)
