@@ -4,6 +4,7 @@
 
 ## About
 rePROs is the final project for the course "Advanced Software Engineering", in the context of my MSc. degree.
+
 It's a Room Energy Profiling System (Android app + Arduino + 3rd-party weather services) with monitoring and
 intervention capabilities.
 
